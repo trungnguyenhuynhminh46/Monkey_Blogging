@@ -1,16 +1,22 @@
 // Library
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { toast } from "react-toastify";
 // Assets
+import { useAuth } from "../contexts/auth-context";
+import { auth } from "../firebase/firebase-config";
 // Components
 import InputGroup from "../component/InputGroup";
 import Label from "../component/Label";
 import Input from "../component/Input";
 import Button from "../component/Icons/Button";
 import Error from "../component/Error";
+import AuthenticationLayout from "../layouts/AuthenticationLayout";
 
 const StyledSignInPage = styled.div`
   min-height: 100vh;
@@ -40,22 +46,23 @@ const StyledSignInPage = styled.div`
 
 const schema = yup
   .object({
-    fullname: yup.string().required("Please enter your full name"),
     email: yup
       .string()
-      .email("The email you enter in a wrong format!")
-      .required("Please enter your email"),
+      .required("Please enter your email")
+      .email("The email you enter in a wrong format!"),
     password: yup
       .string()
+      .required("Please enter your password")
       .matches(
         /^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
         "Password must contain at least 8 characters, one uppercase, one number and one special case character"
-      )
-      .required("Please enter your password"),
+      ),
   })
   .required();
 
 const SignInPage = () => {
+  const { userInfo } = useAuth();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -63,49 +70,71 @@ const SignInPage = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
-  const onSubmit = (data) => {
-    console.log(data);
+  // States
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    if (userInfo?.uid) {
+      navigate("/");
+    }
+  }, [userInfo]);
+  // Effect
+  useEffect(() => {
+    const arr = Object.values(errors);
+    if (!!err) {
+      arr.push({ message: err });
+    }
+    if (arr.length > 0) {
+      toast.error(arr[0]?.message, {
+        autoClose: 5000,
+        pauseOnHover: false,
+      });
+    }
+  }, [errors, err]);
+  // Handlers
+  const onSubmit = async (data) => {
+    try {
+      // Variables
+      const email = data.email;
+      const password = data.password;
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      setErr("Somthing went wrong please try again!");
+    }
   };
   return (
-    <StyledSignInPage>
-      <div className="container">
-        <div className="logo">
-          <img srcSet="/logo.png 3x" alt="mokey image" />
-        </div>
-        <h1 className="heading">Monkey Blogging</h1>
-        <form action="#" autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-          <InputGroup>
-            <Label htmlFor="email">Email address</Label>
-            <Input
-              type="text"
-              name="email"
-              id="email"
-              placeholder="Please enter your email"
-              control={control}
-            />
-          </InputGroup>
-          <Error>{errors.email?.message}</Error>
-          <InputGroup>
-            <Label htmlFor="password">Password</Label>
-            <Input
-              type="password"
-              name="password"
-              id="password"
-              placeholder="Please enter your password"
-              control={control}
-            />
-          </InputGroup>
-          <Error>{errors.password?.message}</Error>
-          <div className="button">
-            <Button type="submit" isLoading={false}>
-              Sign Up
-            </Button>
-          </div>
-        </form>
-      </div>
-    </StyledSignInPage>
+    <AuthenticationLayout>
+      <form action="#" autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+        <InputGroup>
+          <Label htmlFor="email">Email address</Label>
+          <Input
+            type="text"
+            name="email"
+            id="email"
+            placeholder="Please enter your email"
+            control={control}
+          />
+        </InputGroup>
+        {/* <Error>{errors.email?.message}</Error> */}
+        <InputGroup>
+          <Label htmlFor="password">Password</Label>
+          <Input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Please enter your password"
+            control={control}
+          />
+        </InputGroup>
+        {/* <Error>{errors.password?.message}</Error> */}
+        <Button type="submit" isLoading={false} style={{ maxWidth: 350 }}>
+          Sign Up
+        </Button>
+      </form>
+    </AuthenticationLayout>
   );
 };
 
