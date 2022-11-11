@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
 // Assets
@@ -14,33 +14,26 @@ import { auth } from "../firebase/firebase-config";
 import InputGroup from "../component/InputGroup";
 import Label from "../component/Label";
 import Input from "../component/Input";
-import Button from "../component/Icons/Button";
+import Button from "../component/Button";
 import Error from "../component/Error";
 import AuthenticationLayout from "../layouts/AuthenticationLayout";
 
 const StyledSignInPage = styled.div`
-  min-height: 100vh;
-  padding: 20px;
-  /* Prevent select */
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
-  .logo {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-  .heading {
-    text-align: center;
-    color: ${(props) => props.theme.primary};
-    font-weight: bold;
-    font-size: 32px;
-    margin-bottom: 24px;
-  }
   .button {
     display: flex;
     justify-content: center;
-    padding: 32px 0;
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+  }
+  .to_register {
+    font-style: italic;
+    max-width: 800px;
+    margin: 0 auto;
+    a {
+      font-weight: 500;
+      color: ${(props) => props.theme.primary};
+    }
   }
 `;
 
@@ -75,6 +68,7 @@ const SignInPage = () => {
   });
   // States
   const [err, setErr] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (userInfo?.uid) {
@@ -97,44 +91,61 @@ const SignInPage = () => {
   // Handlers
   const onSubmit = async (data) => {
     try {
+      setIsLoading(true);
       // Variables
       const email = data.email;
       const password = data.password;
       await signInWithEmailAndPassword(auth, email, password);
+      setIsLoading(false);
+      toast.success("Sign in successfully!!!", {
+        autoClose: 5000,
+        pauseOnHover: false,
+      });
     } catch (err) {
-      setErr("Somthing went wrong please try again!");
+      setErr("Something went wrong please try again!");
     }
   };
   return (
-    <AuthenticationLayout>
-      <form action="#" autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-        <InputGroup>
-          <Label htmlFor="email">Email address</Label>
-          <Input
-            type="text"
-            name="email"
-            id="email"
-            placeholder="Please enter your email"
-            control={control}
-          />
-        </InputGroup>
-        {/* <Error>{errors.email?.message}</Error> */}
-        <InputGroup>
-          <Label htmlFor="password">Password</Label>
-          <Input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Please enter your password"
-            control={control}
-          />
-        </InputGroup>
-        {/* <Error>{errors.password?.message}</Error> */}
-        <Button type="submit" isLoading={false} style={{ maxWidth: 350 }}>
-          Sign Up
-        </Button>
-      </form>
-    </AuthenticationLayout>
+    <StyledSignInPage>
+      <AuthenticationLayout>
+        <form action="#" autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+          <InputGroup>
+            <Label htmlFor="email">Email address</Label>
+            <Input
+              type="text"
+              name="email"
+              id="email"
+              placeholder="Please enter your email"
+              control={control}
+            />
+          </InputGroup>
+          {/* <Error>{errors.email?.message}</Error> */}
+          <InputGroup>
+            <Label htmlFor="password">Password</Label>
+            <Input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Please enter your password"
+              control={control}
+            />
+          </InputGroup>
+          {/* <Error>{errors.password?.message}</Error> */}
+          <p className="to_register">
+            You don't have any account? <Link to="/sign-up">Make one!</Link>
+          </p>
+          <div className="button">
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              style={{ maxWidth: 350 }}
+            >
+              Sign In
+            </Button>
+          </div>
+        </form>
+      </AuthenticationLayout>
+    </StyledSignInPage>
   );
 };
 

@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 // Assets
 import { app, auth, db, storage } from "../firebase/firebase-config";
 import { doc, setDoc } from "firebase/firestore";
@@ -14,11 +14,29 @@ import { doc, setDoc } from "firebase/firestore";
 import InputGroup from "../component/InputGroup";
 import Label from "../component/Label";
 import Input from "../component/Input";
-import Button from "../component/Icons/Button";
+import Button from "../component/Button";
 import Error from "../component/Error";
 import AuthenticationLayout from "../layouts/AuthenticationLayout";
 
-const StyledSignUpPage = styled.div``;
+const StyledSignUpPage = styled.div`
+  .button {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+  }
+
+  .to_login {
+    font-style: italic;
+    max-width: 800px;
+    margin: 0 auto;
+    a {
+      font-weight: 500;
+      color: ${(props) => props.theme.primary};
+    }
+  }
+`;
 
 const schema = yup
   .object({
@@ -103,47 +121,57 @@ const SignUpPage = () => {
     }
   };
   return (
-    <AuthenticationLayout>
-      <form action="#" autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-        <InputGroup>
-          <Label htmlFor="displayName">Display name</Label>
-          <Input
-            type="text"
-            name="displayName"
-            id="displayName"
-            placeholder="Please enter your display name"
-            control={control}
-          />
-        </InputGroup>
-        {/* <Error>{errors.displayName?.message}</Error> */}
-        <InputGroup>
-          <Label htmlFor="email">Email address</Label>
-          <Input
-            type="text"
-            name="email"
-            id="email"
-            placeholder="Please enter your email"
-            control={control}
-          />
-        </InputGroup>
-        {/* <Error>{errors.email?.message}</Error> */}
-        <InputGroup>
-          <Label htmlFor="password">Password</Label>
-          <Input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Please enter your password"
-            control={control}
-          />
-        </InputGroup>
-        {/* <Error>{errors.password?.message}</Error> */}
-        <Button type="submit" isLoading={isLoading} style={{ maxWidth: 350 }}>
-          Sign Up
-        </Button>
-        <div className="form_error">{/* <Error>{err}</Error> */}</div>
-      </form>
-    </AuthenticationLayout>
+    <StyledSignUpPage>
+      <AuthenticationLayout>
+        <form action="#" autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+          <InputGroup>
+            <Label htmlFor="displayName">Display name</Label>
+            <Input
+              type="text"
+              name="displayName"
+              id="displayName"
+              placeholder="Please enter your display name"
+              control={control}
+            />
+          </InputGroup>
+          {/* <Error>{errors.displayName?.message}</Error> */}
+          <InputGroup>
+            <Label htmlFor="email">Email address</Label>
+            <Input
+              type="text"
+              name="email"
+              id="email"
+              placeholder="Please enter your email"
+              control={control}
+            />
+          </InputGroup>
+          {/* <Error>{errors.email?.message}</Error> */}
+          <InputGroup>
+            <Label htmlFor="password">Password</Label>
+            <Input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Please enter your password"
+              control={control}
+            />
+          </InputGroup>
+          {/* <Error>{errors.password?.message}</Error> */}
+          <p className="to_login">
+            You already have an account? <Link to="/sign-in">Log in!</Link>
+          </p>
+          <div className="button">
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              style={{ maxWidth: 350 }}
+            >
+              Sign Up
+            </Button>
+          </div>
+        </form>
+      </AuthenticationLayout>
+    </StyledSignUpPage>
   );
 };
 

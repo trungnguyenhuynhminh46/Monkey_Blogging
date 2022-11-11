@@ -1,11 +1,25 @@
 import React from "react";
-import { auth } from "../firebase/firebase-config";
+import styled from "styled-components";
 import { signOut } from "firebase/auth";
+// Assets
+import { auth } from "../firebase/firebase-config";
+// Components
+import HomeLayout from "../layouts/HomeLayout";
+// Modules
+import {
+  HomeBanner,
+  FeaturedPosts,
+  NewestUpdate,
+  RandomPosts,
+} from "./modules/Home";
 
 const HomePage = () => {
   return (
-    <div>
-      This is Home Page
+    <HomeLayout>
+      <HomeBanner></HomeBanner>
+      <FeaturedPosts></FeaturedPosts>
+      <NewestUpdate></NewestUpdate>
+      <RandomPosts></RandomPosts>
       <button
         onClick={() => {
           signOut(auth);
@@ -13,7 +27,7 @@ const HomePage = () => {
       >
         Sign out
       </button>
-    </div>
+    </HomeLayout>
   );
 };
 

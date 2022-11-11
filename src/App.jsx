@@ -21,14 +21,7 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedComponent>
-              <HomePage></HomePage>
-            </ProtectedComponent>
-          }
-        ></Route>
+        <Route path="/" element={<HomePage></HomePage>}></Route>
         <Route path="/sign-up" element={<SignUpPage />}></Route>
         <Route path="/sign-in" element={<SignInPage />}></Route>
       </Routes>

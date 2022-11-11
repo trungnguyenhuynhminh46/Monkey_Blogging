@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const StyledAuthenticationLayout = styled.div`
   min-height: 100vh;
@@ -26,9 +27,9 @@ const AuthenticationLayout = ({ children }) => {
   return (
     <StyledAuthenticationLayout>
       <div className="container">
-        <div className="logo">
+        <Link to="/" className="logo">
           <img srcSet="/logo.png 3x" alt="monkey image" />
-        </div>
+        </Link>
         <h1 className="heading">Monkey Blogging</h1>
         {children}
       </div>
