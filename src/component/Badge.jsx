@@ -23,7 +23,12 @@ const Badge = ({ children, bg = "#f3edff", to = "", href = "", style }) => {
   const Wrapper = !!to ? Link : !!href ? "a" : "div";
   return (
     <StyledBadge style={finalStyle}>
-      <Wrapper to={to} href={href} target={href && "_blank"}>
+      <Wrapper
+        to={to}
+        href={href}
+        target={href && "_blank"}
+        className="leading-4"
+      >
         {children}
       </Wrapper>
     </StyledBadge>

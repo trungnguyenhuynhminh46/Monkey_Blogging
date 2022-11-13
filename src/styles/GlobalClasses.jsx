@@ -3,7 +3,7 @@ import { css } from "styled-components";
 export const GlobalClasses = css`
   .container {
     width: 100%;
-    max-width: 1180px;
+    max-width: 1260px;
     margin: 0 auto;
     padding: 0 20px;
   }

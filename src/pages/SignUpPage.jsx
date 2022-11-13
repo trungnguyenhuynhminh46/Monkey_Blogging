@@ -161,11 +161,7 @@ const SignUpPage = () => {
             You already have an account? <Link to="/sign-in">Log in!</Link>
           </p>
           <div className="button">
-            <Button
-              type="submit"
-              isLoading={isLoading}
-              style={{ maxWidth: 350 }}
-            >
+            <Button type="submit" isLoading={isLoading} style={{ width: 350 }}>
               Sign Up
             </Button>
           </div>

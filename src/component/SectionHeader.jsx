@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const StyledSectionHeader = styled.div`
   position: relative;
@@ -12,6 +12,11 @@ const StyledSectionHeader = styled.div`
   line-height: 36px;
 
   color: ${(props) => props.theme.purple};
+  ${(props) =>
+    props.color &&
+    css`
+      color: ${(props) => props.color};
+    `};
   &::before {
     content: "";
     position: absolute;
@@ -26,8 +31,8 @@ const StyledSectionHeader = styled.div`
   }
 `;
 
-const SectionHeader = ({ children }) => {
-  return <StyledSectionHeader>{children}</StyledSectionHeader>;
+const SectionHeader = ({ children, color }) => {
+  return <StyledSectionHeader color={color}>{children}</StyledSectionHeader>;
 };
 
 export default SectionHeader;

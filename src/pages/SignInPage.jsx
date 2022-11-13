@@ -135,11 +135,7 @@ const SignInPage = () => {
             You don't have any account? <Link to="/sign-up">Make one!</Link>
           </p>
           <div className="button">
-            <Button
-              type="submit"
-              isLoading={isLoading}
-              style={{ maxWidth: 350 }}
-            >
+            <Button type="submit" isLoading={isLoading} style={{ width: 350 }}>
               Sign In
             </Button>
           </div>

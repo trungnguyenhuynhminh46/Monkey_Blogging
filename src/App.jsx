@@ -10,6 +10,8 @@ import "./styles/index.scss";
 import SignUpPage from "./pages/SignUpPage";
 import SignInPage from "./pages/SignInPage";
 import HomePage from "./pages/HomePage";
+import NotFoundPage from "./pages/NotFoundPage";
+import DetailPage from "./pages/DetailPage";
 function ProtectedComponent({ children }) {
   const { userInfo } = useAuth();
   if (!userInfo?.uid) {
@@ -24,6 +26,8 @@ function App() {
         <Route path="/" element={<HomePage></HomePage>}></Route>
         <Route path="/sign-up" element={<SignUpPage />}></Route>
         <Route path="/sign-in" element={<SignInPage />}></Route>
+        <Route path="/post/*" element={<DetailPage />}></Route>
+        <Route path="*" element={<NotFoundPage />}></Route>
       </Routes>
       <ToastContainer />
     </div>

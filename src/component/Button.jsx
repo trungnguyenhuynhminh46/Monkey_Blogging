@@ -42,6 +42,7 @@ const Button = ({
   isLoading = false,
   to,
   bg_white = false,
+  style,
   ...props
 }) => {
   let Redirect = "span";
@@ -49,14 +50,16 @@ const Button = ({
     Redirect = Link;
   }
   return (
-    <StyledButton
-      className={bg_white && "bg_white"}
-      type={type}
-      onClick={onClick}
-      {...props}
-    >
-      <Redirect to={to}>{isLoading ? <LoadingSpinner /> : children}</Redirect>
-    </StyledButton>
+    <Redirect to={to} style={style}>
+      <StyledButton
+        className={bg_white && "bg_white"}
+        type={type}
+        onClick={onClick}
+        {...props}
+      >
+        {isLoading ? <LoadingSpinner /> : children}
+      </StyledButton>
+    </Redirect>
   );
 };
 
