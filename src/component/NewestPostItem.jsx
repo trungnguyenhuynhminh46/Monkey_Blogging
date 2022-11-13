@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 // Components
 import Badge from "./Badge";
+import CompoundLink from "./CompoundLink";
 import InfoDetail from "./InfoDetail";
 
 const StyledNewestPostItem = styled.div`
@@ -20,13 +21,6 @@ const StyledNewestPostItem = styled.div`
     flex-direction: column;
     justify-content: center;
   }
-  .title {
-    font-style: normal;
-    font-size: 18px;
-    line-height: 24px;
-
-    padding: 12px 0;
-  }
 `;
 
 const NewestPostItem = () => {
@@ -38,12 +32,15 @@ const NewestPostItem = () => {
         className="image"
       />
       <div className="content">
-        <Badge bg="white" style={{ width: 92 }}>
+        <Badge to="/category/kien-thuc" bg="white">
           Kiến thức
         </Badge>
-        <div className="title">
+        <CompoundLink
+          to="/post/huong-dan-setup-phong-cuc-chill-cho-nguoi-moi-toan-tap"
+          style={{ fontSize: "18px", lineHeight: "24px", padding: "12px 0" }}
+        >
           Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
-        </div>
+        </CompoundLink>
         <InfoDetail color="#6B6B6B" style={{ width: 160 }}></InfoDetail>
       </div>
     </StyledNewestPostItem>

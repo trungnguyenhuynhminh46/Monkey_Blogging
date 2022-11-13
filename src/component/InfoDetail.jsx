@@ -7,11 +7,13 @@ const StyledInfoDetail = styled.div`
   align-items: center;
   gap: 6px;
   font-size: 14px;
+  font-weight: 600;
   .post__dot {
-    height: 4px;
-    width: 4px;
+    height: 6px;
+    width: 6px;
     border-radius: 50%;
     background: ${(props) => props.color};
+    opacity: 0.4;
   }
 `;
 

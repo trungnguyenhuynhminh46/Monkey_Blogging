@@ -14,7 +14,7 @@ const StyledNewestUpdate = styled.div`
   }
   .newest-item {
     padding: 32px 0;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid #e0e0e0;
     &:last-child {
       border-bottom: transparent;
     }

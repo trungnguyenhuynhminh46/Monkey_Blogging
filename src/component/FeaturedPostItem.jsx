@@ -1,8 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 // Components
-import Badge from "../component/Badge";
+import Badge from "./Badge";
 import InfoDetail from "../component/InfoDetail";
+import CompoundLink from "./CompoundLink";
 
 const StyledFeaturedPostItem = styled.div`
   position: relative;
@@ -41,10 +42,6 @@ const StyledFeaturedPostItem = styled.div`
     justify-content: space-between;
     margin-bottom: 16px;
   }
-  .post__title {
-    font-size: 22px;
-    line-height: 28px;
-  }
 `;
 
 const FeaturedPostItem = ({ data }) => {
@@ -58,12 +55,15 @@ const FeaturedPostItem = ({ data }) => {
       <div className="post__overlay"></div>
       <div className="post__content">
         <div className="post__info">
-          <Badge>Kiến thức</Badge>
+          <Badge to="/category/kien-thuc">Kiến thức</Badge>
           <InfoDetail date="Mar 24" name="Anna Le" color="#f8f9fa"></InfoDetail>
         </div>
-        <p className="post__title">
+        <CompoundLink
+          to="/post/huong-dan-setup-phong-cuc-chill-cho-nguoi-moi-toan-tap"
+          style={{ fontSize: "22px", lineHeight: "28px" }}
+        >
           Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
-        </p>
+        </CompoundLink>
       </div>
     </StyledFeaturedPostItem>
   );
