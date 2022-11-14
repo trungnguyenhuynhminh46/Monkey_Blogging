@@ -7,13 +7,13 @@ const StyledButton = styled.button`
   cursor: pointer;
 
   width: 100%;
-  padding: 20px;
+  padding: ${(props) => props.padding};
   margin: 20px 0;
   border-radius: 8px;
 
   text-align: center;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: ${(props) => props.fontSize};
+  font-weight: ${(props) => props.fontWeight};
   color: white;
 
   background-image: linear-gradient(
@@ -43,9 +43,12 @@ const Button = ({
   to,
   bg_white = false,
   style,
+  fontWeight = "600",
+  fontSize = "20px",
+  padding = "20px",
   ...props
 }) => {
-  let Redirect = "span";
+  let Redirect = "div";
   if (!!to) {
     Redirect = Link;
   }
@@ -55,6 +58,9 @@ const Button = ({
         className={bg_white && "bg_white"}
         type={type}
         onClick={onClick}
+        fontSize={fontSize}
+        fontWeight={fontWeight}
+        padding={padding}
         {...props}
       >
         {isLoading ? <LoadingSpinner /> : children}
