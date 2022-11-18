@@ -2,8 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 // Components
-import Button from "../../../component/Button";
-import CompoundLink from "../../../component/CompoundLink";
+import Button from "../../component/Button";
+import CompoundLink from "../../component/CompoundLink";
 
 const StyledHeaderPost = styled.div`
   display: flex;
@@ -21,7 +21,7 @@ const Header = () => {
           fontWeight={600}
           padding={"18px 0"}
         >
-          <Link to="/manage/add-post">Write new post</Link>
+          <Link to="/dashboard/add-post">Write new post</Link>
         </Button>
         <CompoundLink to="/admin">
           <img

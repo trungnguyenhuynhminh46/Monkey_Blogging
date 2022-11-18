@@ -1,8 +1,13 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+// Components
+import Heading from "../layouts/DashboardLayout/Heading";
 
 const Dashboard = () => {
-  return <div>Dashboard</div>;
+  return (
+    <div className="flex-1 mb-[40px]">
+      <Heading>Dashboard Page</Heading>
+    </div>
+  );
 };
 
 export default Dashboard;

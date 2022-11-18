@@ -5,14 +5,13 @@ import "react-toastify/dist/ReactToastify.css";
 // Assets
 import { useAuth } from "./contexts/auth-context";
 import "./styles/index.scss";
-
 // Pages
 import SignUpPage from "./pages/SignUpPage";
 import SignInPage from "./pages/SignInPage";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import DetailPage from "./pages/DetailPage";
-import DashboardLayout from "./pages/modules/Dashboard/DashboardLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import AddPostPage from "./pages/AddPostPage";
 import PostsPage from "./pages/PostsPage";
