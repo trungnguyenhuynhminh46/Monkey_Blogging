@@ -3,9 +3,9 @@ import styled from "styled-components";
 
 const StyledDashboardHeading = styled.div`
   font-weight: bold;
-  font-size: 36px;
+  font-size: 24px;
   margin-bottom: 40px;
-  color: #2ebac1;
+  color: black;
   letter-spacing: 1px;
 `;
 

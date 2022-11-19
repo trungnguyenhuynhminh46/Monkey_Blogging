@@ -55,7 +55,11 @@ const Input = ({ type, name, id, placeholder, control, props }) => {
       />
       {type === "password" && (
         <div className="icon" onClick={toggleShowPassword}>
-          {showPassword ? <Icons.IconEye /> : <Icons.IconEyeSlash />}
+          {showPassword ? (
+            <Icons.IconEye iconClassName="w-6 h-6" />
+          ) : (
+            <Icons.IconEyeSlash iconClassName="w-6 h-6" />
+          )}
         </div>
       )}
     </StyledInput>

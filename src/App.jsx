@@ -15,6 +15,8 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import AddPostPage from "./pages/AddPostPage";
 import PostsPage from "./pages/PostsPage";
+import CategoriesPage from "./pages/CategoriesPage";
+import AddCategoryPage from "./pages/AddCategoryPage";
 
 function ProtectedComponent({ children }) {
   const { userInfo } = useAuth();
@@ -41,8 +43,10 @@ function App() {
           }
         >
           <Route index element={<Dashboard />}></Route>
-          <Route path="post" element={<PostsPage />}></Route>
+          <Route path="posts" element={<PostsPage />}></Route>
           <Route path="add-post" element={<AddPostPage />}></Route>
+          <Route path="categories" element={<CategoriesPage />}></Route>
+          <Route path="add-category" element={<AddCategoryPage />}></Route>
         </Route>
         <Route path="*" element={<NotFoundPage />}></Route>
       </Routes>

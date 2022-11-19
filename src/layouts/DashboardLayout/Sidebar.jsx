@@ -34,12 +34,12 @@ const dashboardSidebarData = [
   {
     title: "Post",
     icon: <Icons.IconBook />,
-    to: "/dashboard/post",
+    to: "/dashboard/posts",
   },
   {
     title: "Category",
     icon: <Icons.IconBox />,
-    to: "/dashboard/category",
+    to: "/dashboard/categories",
   },
   {
     title: "Users",

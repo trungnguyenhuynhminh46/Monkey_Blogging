@@ -1,22 +1,81 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { collection, getDocs, query, where } from "firebase/firestore";
+// Assets
+import { db } from "../firebase/firebase-config";
 // Components
 import Heading from "../layouts/DashboardLayout/Heading";
 import Table from "../component/Table";
 import Pagination from "../component/Pagination";
+import Icons from "../component/Icons";
+import { Dropdown } from "../component/Dropdown";
+import Button from "../component/Button";
+
+const StyledButton = styled.span`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 40px;
+  height: 40px;
+
+  border-radius: 4px;
+  border: 1px solid rgb(229 231 235);
+  cursor: pointer;
+`;
 
 const PostsPage = () => {
+  // States
+  const [categories, setCategories] = useState([]);
+  // Effect
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const categoriesQuery = query(
+        collection(db, "categories"),
+        where("status", "==", 1)
+      );
+      const querySnap = await getDocs(categoriesQuery);
+      let catsList = [];
+      querySnap.forEach((category) => {
+        catsList.push({ id: category.id, ...category.data() });
+      });
+      setCategories(catsList);
+    };
+    fetchCategories();
+  }, []);
   return (
     <div className="flex-1 mb-[40px]">
-      <Heading>Manage Post</Heading>
-      <div className="flex justify-end">
-        <input
-          type="text"
-          name=""
-          id=""
-          placeholder="Search post..."
-          className="p-4 w-full max-w-[300px] outline-none border border-gray-200 rounded-lg"
-        />
+      <Heading>Manage Posts</Heading>
+      <div className="flex justify-between items-center px-10">
+        <Button
+          style={{ width: 192 }}
+          fontSize={"18px"}
+          fontWeight={600}
+          padding={"18px 0"}
+          to="/dashboard/add-post"
+        >
+          Add post
+        </Button>
+        <div className="flex-1 flex justify-end items-center gap-x-5">
+          <Dropdown style={{ maxWidth: 300 }} selectionBG="white">
+            {categories.map((category) => {
+              return (
+                <Dropdown.Option key={category.id}>
+                  {category.name}
+                </Dropdown.Option>
+              );
+            })}
+          </Dropdown>
+          <input
+            type="text"
+            name=""
+            id=""
+            placeholder="Search category..."
+            className="p-4 w-full max-w-[300px] outline-none border border-gray-200 rounded-lg"
+          />
+        </div>
       </div>
+
       <Table>
         <thead>
           <tr>
@@ -53,59 +112,15 @@ const PostsPage = () => {
             </td>
             <td>
               <div className="flex items-center gap-x-3 text-gray-500">
-                <span className="flex items-center justify-center w-10 h-10 border border-gray-200 border-solid rounded cursor-pointer">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-5 h-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  </svg>
-                </span>
-                <span className="flex items-center justify-center w-10 h-10 border border-gray-200 border-solid rounded cursor-pointer">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-5 h-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                </span>
-                <span className="flex items-center justify-center w-10 h-10 border border-gray-200 border-solid rounded cursor-pointer">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-5 h-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                </span>
+                <StyledButton>
+                  <Icons.IconEye iconClassName="w-5 h-5" />
+                </StyledButton>
+                <StyledButton>
+                  <Icons.IconPencilSquare iconClassName="w-5 h-5" />
+                </StyledButton>
+                <StyledButton>
+                  <Icons.IconTrashCan iconClassName="w-5 h-5" />
+                </StyledButton>
               </div>
             </td>
           </tr>

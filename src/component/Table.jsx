@@ -31,7 +31,7 @@ const StyledTable = styled.div`
 const Table = ({ children }) => {
   return (
     <StyledTable>
-      <table>{children}</table>;
+      <table>{children}</table>
     </StyledTable>
   );
 };

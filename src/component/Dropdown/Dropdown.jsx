@@ -5,6 +5,8 @@ import useClickOutSide from "../../hooks/useClickOutSide";
 const Dropdown = ({
   placeholder = "Please select an option",
   children,
+  style,
+  selectionBG = "#E7ECF3",
   ...props
 }) => {
   const [show, setShow, nodeRef] = useClickOutSide();
@@ -14,9 +16,13 @@ const Dropdown = ({
   const value = { ...props, show, setShow };
   return (
     <DropdownProvider value={value}>
-      <div className="relative inline-block w-full" ref={nodeRef}>
+      <div
+        className="relative inline-block w-full rounded border border-solid border-gray-100 space-y-2"
+        ref={nodeRef}
+        style={style}
+      >
         <div
-          className="flex items-center justify-between p-5 bg-[#E7ECF3] rounded cursor-pointer font-medium"
+          className={`flex items-center justify-between p-5 bg-[${selectionBG}] rounded cursor-pointer font-medium`}
           onClick={handleToggleShow}
         >
           <span>{placeholder}</span>

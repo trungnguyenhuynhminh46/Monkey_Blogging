@@ -1,9 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/auth-context";
 // Components
 import Button from "../../component/Button";
 import CompoundLink from "../../component/CompoundLink";
+import Image from "../../component/Image";
 
 const StyledHeaderPost = styled.div`
   display: flex;
@@ -12,6 +14,7 @@ const StyledHeaderPost = styled.div`
 `;
 
 const Header = () => {
+  const { userInfo } = useAuth();
   return (
     <StyledHeaderPost>
       <div className="flex items-center gap-6 mr-6">
@@ -20,12 +23,13 @@ const Header = () => {
           fontSize={"18px"}
           fontWeight={600}
           padding={"18px 0"}
+          to="/dashboard/add-post"
         >
-          <Link to="/dashboard/add-post">Write new post</Link>
+          Write new post
         </Button>
-        <CompoundLink to="/admin">
-          <img
-            src="https://plus.unsplash.com/premium_photo-1666264200746-51580f36334e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+        <CompoundLink to="/dashboard/profile">
+          <Image
+            src={userInfo.image || ""}
             alt=""
             className="w-14 h-14 rounded-full"
           />
