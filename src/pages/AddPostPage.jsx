@@ -10,6 +10,7 @@ import {
 } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import slugify from "slugify";
+import { toast } from "react-toastify";
 
 // Assets
 import { postStatus } from "../utils/constants";
@@ -61,6 +62,7 @@ const AddPostPage = () => {
 
   // States
   const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   // Effect
   useEffect(() => {
     const getData = async () => {
@@ -78,10 +80,11 @@ const AddPostPage = () => {
     getData();
   }, []);
   useEffect(() => {
-    setValue("slug", slugify(watchTitle));
+    setValue("slug", slugify(watchTitle, { lower: true }));
   }, [watchTitle]);
   // Handlers
   const onSubmit = async (data) => {
+    setIsLoading(true);
     // Variables
     const title = data.title;
     const slug = data.slug;
@@ -120,6 +123,12 @@ const AddPostPage = () => {
     setImageDownloadURL("");
     setCurrentProgress(0);
     setCategories([]);
+    // Reset loading
+    setIsLoading(false);
+    toast.success("Successfully add post!!!", {
+      autoClose: 5000,
+      pauseOnHover: false,
+    });
   };
   return (
     <form
@@ -229,7 +238,7 @@ const AddPostPage = () => {
         </div>
       </div>
       <div className="flex justify-center mt-10">
-        <Button type="submit" style={{ width: 300 }}>
+        <Button type="submit" style={{ width: 300 }} isLoading={isLoading}>
           Add post
         </Button>
       </div>

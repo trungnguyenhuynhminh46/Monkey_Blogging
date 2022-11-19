@@ -1,5 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
+import { collection, doc, getDoc, query } from "firebase/firestore";
+import { db } from "../firebase/firebase-config";
+import { format } from "date-fns";
 // Components
 import Badge from "./Badge";
 import InfoDetail from "../component/InfoDetail";
@@ -45,24 +49,49 @@ const StyledFeaturedPostItem = styled.div`
 `;
 
 const FeaturedPostItem = ({ data }) => {
+  // console.log(data);
+  // State
+  const [category, setCategory] = useState({});
+  const [author, setAuthor] = useState({});
+  // Effect
+  useEffect(() => {
+    const fetchData = async () => {
+      // Get category
+      const categoryRef = doc(db, "categories", data.category_id);
+      const categorySnap = await getDoc(categoryRef);
+      setCategory(categorySnap.data());
+
+      // Get author
+      const authorRef = doc(db, "users", data.user_id);
+      const authorSnap = await getDoc(authorRef);
+      setAuthor(authorSnap.data());
+    };
+    fetchData();
+  }, []);
+  // Handlers, Functions
+  const convertDateFormat = (seconds) => {
+    const date = new Date(1000 * seconds);
+    const formattedDate = format(date, "MMM d y");
+    return formattedDate;
+  };
   return (
     <StyledFeaturedPostItem>
-      <img
-        src="https://images.unsplash.com/photo-1661961110144-12ac85918e40?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
-        alt=""
-        className="post__bg_img"
-      />
+      <img src={data?.image} alt="" className="post__bg_img" />
       <div className="post__overlay"></div>
       <div className="post__content">
         <div className="post__info">
-          <Badge to="/category/kien-thuc">Kiến thức</Badge>
-          <InfoDetail date="Mar 24" name="Anna Le" color="#f8f9fa"></InfoDetail>
+          <Badge to={`/category/${category?.slug}`}>{category?.name}</Badge>
+          <InfoDetail
+            date={convertDateFormat(data?.createdAt.seconds)}
+            name={author?.displayName?.split(" ").at(-1)}
+            color="#f8f9fa"
+          ></InfoDetail>
         </div>
         <CompoundLink
-          to="/post/huong-dan-setup-phong-cuc-chill-cho-nguoi-moi-toan-tap"
+          to={`/to/${data?.slug}`}
           style={{ fontSize: "22px", lineHeight: "28px" }}
         >
-          Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
+          {data.title}
         </CompoundLink>
       </div>
     </StyledFeaturedPostItem>

@@ -8,9 +8,13 @@ const AuthProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState({});
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsub = onAuthStateChanged(auth, (user) => {
       setUserInfo(user);
     });
+    // Clean up
+    return () => {
+      unsub();
+    };
   }, []);
 
   return (

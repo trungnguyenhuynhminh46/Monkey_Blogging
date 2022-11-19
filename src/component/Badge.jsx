@@ -3,6 +3,10 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 const StyledBadge = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   width: max-content;
   padding: 4px 10px;
   border-radius: 10px;

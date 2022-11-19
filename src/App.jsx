@@ -18,7 +18,7 @@ import PostsPage from "./pages/PostsPage";
 
 function ProtectedComponent({ children }) {
   const { userInfo } = useAuth();
-  if (!userInfo?.uid) {
+  if (!userInfo) {
     return <Navigate to="/sign-in"></Navigate>;
   }
   return children;
@@ -28,13 +28,20 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<HomePage></HomePage>}></Route>
+        <Route path="/" element={<HomePage />}></Route>
         <Route path="/sign-up" element={<SignUpPage />}></Route>
         <Route path="/sign-in" element={<SignInPage />}></Route>
         <Route path="/:slug" element={<DetailPage />}></Route>
-        <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedComponent>
+              <DashboardLayout />
+            </ProtectedComponent>
+          }
+        >
           <Route index element={<Dashboard />}></Route>
-          <Route path="post" element={<PostsPage></PostsPage>}></Route>
+          <Route path="post" element={<PostsPage />}></Route>
           <Route path="add-post" element={<AddPostPage />}></Route>
         </Route>
         <Route path="*" element={<NotFoundPage />}></Route>
