@@ -7,6 +7,7 @@ import IconLogOut from "./IconLogOut";
 import IconUsers from "./IconUsers";
 import IconPencilSquare from "./IconPencilSquare";
 import IconTrashCan from "./IconTrashCan";
+import IconCheck from "./IconCheck";
 export default {
   IconEye,
   IconEyeSlash,
@@ -17,4 +18,5 @@ export default {
   IconUsers,
   IconPencilSquare,
   IconTrashCan,
+  IconCheck,
 };

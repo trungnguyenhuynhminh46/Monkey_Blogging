@@ -3,7 +3,11 @@ import styled, { css } from "styled-components";
 
 const StyledInputGroup = styled.div`
   width: 100%;
-  max-width: 800px;
+  ${(props) =>
+    props.maxWidth &&
+    css`
+      max-width: ${(props) => props.maxWidth};
+    `};
   ${(props) =>
     props.minHeight &&
     css`
@@ -19,8 +23,12 @@ const StyledInputGroup = styled.div`
   align-items: flex-start;
 `;
 
-const InputGroup = ({ children, minHeight = 0 }) => {
-  return <StyledInputGroup minHeight={minHeight}>{children}</StyledInputGroup>;
+const InputGroup = ({ children, minHeight = 0, maxWidth }) => {
+  return (
+    <StyledInputGroup minHeight={minHeight} maxWidth={maxWidth}>
+      {children}
+    </StyledInputGroup>
+  );
 };
 
 export default InputGroup;

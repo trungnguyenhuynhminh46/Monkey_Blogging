@@ -35,7 +35,7 @@ const AddPostPage = () => {
     mode: "onChange",
     defaultValues: {
       title: "",
-      status: 2,
+      status: postStatus.PENDING,
       category: undefined,
       hot: false,
       slug: "",
@@ -44,7 +44,6 @@ const AddPostPage = () => {
     },
   });
   const watchTitle = watch("title");
-  const watchSlug = watch("slug");
   const watchStatus = watch("status");
   const watchCategory = watch("category");
   const watchImage = watch("image");
@@ -145,7 +144,7 @@ const AddPostPage = () => {
               type="text"
               name="title"
               id="title"
-              placeholder="Enter your title"
+              placeholder="Enter post's title"
               control={control}
             />
           </InputGroup>
@@ -176,7 +175,7 @@ const AddPostPage = () => {
               type="text"
               name="slug"
               id="slug"
-              placeholder="Enter your slug"
+              placeholder="Enter post's slug"
               control={control}
             />
           </InputGroup>
