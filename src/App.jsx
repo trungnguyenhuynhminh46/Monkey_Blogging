@@ -17,6 +17,7 @@ import AddPostPage from "./pages/AddPostPage";
 import PostsPage from "./pages/PostsPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import AddCategoryPage from "./pages/AddCategoryPage";
+import Profile from "./pages/Profile";
 
 function ProtectedComponent({ children }) {
   const { userInfo } = useAuth();
@@ -47,6 +48,7 @@ function App() {
           <Route path="add-post" element={<AddPostPage />}></Route>
           <Route path="categories" element={<CategoriesPage />}></Route>
           <Route path="add-category" element={<AddCategoryPage />}></Route>
+          <Route path="profile" element={<Profile />}></Route>
         </Route>
         <Route path="*" element={<NotFoundPage />}></Route>
       </Routes>

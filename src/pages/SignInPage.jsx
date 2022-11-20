@@ -30,6 +30,7 @@ const StyledSignInPage = styled.div`
     font-style: italic;
     max-width: 800px;
     margin: 0 auto;
+    text-align: center;
     a {
       font-weight: 500;
       color: ${(props) => props.theme.primary};

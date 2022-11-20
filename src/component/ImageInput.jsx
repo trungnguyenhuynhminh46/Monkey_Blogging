@@ -7,11 +7,12 @@ import {
 import React, { Fragment, useState } from "react";
 import { storage } from "../firebase/firebase-config";
 
-const useImageInput = (watchImage, setValue) => {
+const useImageInput = (watchImage, setValue, root = "images", name = "") => {
   const [currentProgress, setCurrentProgress] = useState(0);
   const [imageDownloadURL, setImageDownloadURL] = useState("");
   const handleUploadImage = (file) => {
-    const storageRef = ref(storage, `images/${file.name}`);
+    const img_dir = name ? `${root}/${name}` : `${root}/${file.name}`;
+    const storageRef = ref(storage, img_dir);
     const uploadTask = uploadBytesResumable(storageRef, file);
     uploadTask.on(
       "state_changed",
@@ -30,8 +31,9 @@ const useImageInput = (watchImage, setValue) => {
     );
   };
   const handleDeleteImage = () => {
+    const img_dir = name ? `${root}/${name}` : `${root}/${watchImage.name}`;
     // Create a reference to the file to delete
-    const imageRef = ref(storage, "images/" + watchImage.name);
+    const imageRef = ref(storage, img_dir);
 
     // Delete the file
     deleteObject(imageRef)

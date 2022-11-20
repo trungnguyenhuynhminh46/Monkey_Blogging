@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import { useController } from "react-hook-form";
 import styled from "styled-components";
 // Components
@@ -32,11 +33,19 @@ const StyledInput = styled.div`
   }
 `;
 
-const Input = ({ type, name, id, placeholder, control, props }) => {
+const Input = ({
+  type,
+  name,
+  id,
+  placeholder,
+  defaultValue,
+  control,
+  props,
+}) => {
   const { field } = useController({
     name,
     control,
-    defaultValue: "",
+    defaultValue: defaultValue || "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = () => {
