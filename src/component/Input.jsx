@@ -37,6 +37,7 @@ const Input = ({
   type,
   name,
   id,
+  autoComplete = "off",
   placeholder,
   defaultValue,
   control,
@@ -61,6 +62,7 @@ const Input = ({
         type={showPassword ? "text" : type}
         id={id}
         placeholder={placeholder}
+        autoComplete={autoComplete}
       />
       {type === "password" && (
         <div className="icon" onClick={toggleShowPassword}>

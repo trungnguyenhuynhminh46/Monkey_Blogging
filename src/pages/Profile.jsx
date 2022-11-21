@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
+import format from "date-fns/format";
 // Assets
 import { useAuth } from "../contexts/auth-context";
 // Components
@@ -8,6 +9,7 @@ import InputGroup from "../component/InputGroup";
 import Label from "../component/Label";
 import ImageInput, { useImageInput } from "../component/ImageInput";
 import Input from "../component/Input";
+import DatetimePicker from "../component/DateTimePicker";
 import Button from "../component/Button";
 const Profile = () => {
   // States, variables
@@ -21,9 +23,9 @@ const Profile = () => {
       fullName: "",
       password: "",
       retyped_password: "",
-      image: "",
+      image: undefined,
       phone_num: "",
-      date_of_birth: Date.now(),
+      dob: format(new Date(), "dd/MM/yyyy"),
     },
   });
 
@@ -37,7 +39,7 @@ const Profile = () => {
     handleUploadImage,
     handleDeleteImage,
     handleSelectImage,
-  ] = useImageInput(watchImage, setValue, "avatars");
+  ] = useImageInput(watchImage, setValue, "avatars", userInfo.displayName);
   // Effect
   useEffect(() => {
     let defaultValues = {};
@@ -134,6 +136,20 @@ const Profile = () => {
           />
         </InputGroup>
       </div>
+      <div className="flex gap-10">
+        <div className="w-1/2 pr-5">
+          <InputGroup>
+            <Label>Date of birth</Label>
+            <DatetimePicker
+              name="dob"
+              id="dob"
+              onChange={(date) => {
+                setValue("dob", date);
+              }}
+            />
+          </InputGroup>
+        </div>
+      </div>
       <div className="flex justify-center mt-10">
         <Button type="submit" style={{ width: 300 }}>
           Add post
@@ -144,3 +160,9 @@ const Profile = () => {
 };
 
 export default Profile;
+// image là đường dẫn không phải là file (Sửa sau, không ảnh hưởng app)
+// tên file là tên user (OK)
+// Fix hết warning (OK)
+//  Fix lỗi khi xóa file không chọn lại được file (OK)
+// tạo các variable để update profile
+// Update profile

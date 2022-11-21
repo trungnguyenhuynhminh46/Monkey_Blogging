@@ -50,6 +50,7 @@ const useImageInput = (watchImage, setValue, root = "images", name = "") => {
     const file = e.target.files[0];
     setValue("image", file);
     handleUploadImage(file);
+    e.target.value = "";
   };
 
   return [
@@ -65,6 +66,7 @@ const useImageInput = (watchImage, setValue, root = "images", name = "") => {
 
 const ImageInput = ({
   name,
+  control,
   className = "",
   progress = 0,
   image = "",
@@ -75,13 +77,7 @@ const ImageInput = ({
     <label
       className={`flex justify-center items-center cursor-pointer w-full min-h-[200px] rounded-lg border border-dashed bg-gray-100 ${className} relative overflow-hidden group`}
     >
-      <input
-        type="file"
-        name={name}
-        className="hidden-input"
-        onChange={() => {}}
-        {...props}
-      />
+      <input type="file" name={name} className="hidden-input" {...props} />
       {/* Display */}
       {progress !== 0 && !image && (
         <div className="absolute z-10 w-16 h-16 rounded-full border-8 border-solid border-green-500 border-t-transparent animate-spin"></div>
