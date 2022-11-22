@@ -30,7 +30,7 @@ const useImageInput = (watchImage, setValue, root = "images", name = "") => {
       }
     );
   };
-  const handleDeleteImage = () => {
+  const handleDeleteImage = (image_url = null) => {
     const img_dir = name ? `${root}/${name}` : `${root}/${watchImage.name}`;
     // Create a reference to the file to delete
     const imageRef = ref(storage, img_dir);

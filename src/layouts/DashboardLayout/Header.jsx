@@ -1,11 +1,12 @@
 import React from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/auth-context";
 // Components
 import Button from "../../component/Button";
 import CompoundLink from "../../component/CompoundLink";
-import Image from "../../component/Image";
+import { useEffect } from "react";
 
 const StyledHeaderPost = styled.div`
   display: flex;
@@ -14,6 +15,7 @@ const StyledHeaderPost = styled.div`
 `;
 
 const Header = () => {
+  // States
   const { userInfo } = useAuth();
   return (
     <StyledHeaderPost>
@@ -28,8 +30,8 @@ const Header = () => {
           Write new post
         </Button>
         <CompoundLink to="/dashboard/profile">
-          <Image
-            src={userInfo.image || ""}
+          <img
+            src={userInfo?.photoURL || "/image-placeholder.png"}
             alt=""
             className="w-14 h-14 rounded-full"
           />

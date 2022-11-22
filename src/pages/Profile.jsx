@@ -1,6 +1,14 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import format from "date-fns/format";
+import { doc, getDoc, Timestamp, updateDoc } from "firebase/firestore";
+import {
+  reauthenticateWithCredential,
+  updateEmail,
+  updatePassword,
+  updateProfile,
+} from "firebase/auth";
+import { db, auth } from "../firebase/firebase-config";
 // Assets
 import { useAuth } from "../contexts/auth-context";
 // Components
@@ -14,18 +22,23 @@ import Button from "../component/Button";
 const Profile = () => {
   // States, variables
   const { userInfo } = useAuth();
+  const [user, setUser] = useState(undefined);
+  const [date, setDate] = useState(new Date());
+  // console.log(userInfo);
+  // console.log(userInfo.uid);
+  // console.log(auth.currentUser);
 
   const { control, handleSubmit, reset, setValue, watch } = useForm({
     mode: "onChange",
     defaultValue: {
       displayName: userInfo.displayName,
       email: userInfo.email,
-      fullName: "",
+      fullName: user?.fullName || "",
       password: "",
       retyped_password: "",
       image: undefined,
-      phone_num: "",
-      dob: format(new Date(), "dd/MM/yyyy"),
+      phone_num: user?.phone_num || "",
+      dob: user?.dob || format(new Date(), "dd/MM/yyyy"),
     },
   });
 
@@ -41,15 +54,93 @@ const Profile = () => {
     handleSelectImage,
   ] = useImageInput(watchImage, setValue, "avatars", userInfo.displayName);
   // Effect
+  // Get user
   useEffect(() => {
-    let defaultValues = {};
-    defaultValues.displayName = userInfo.displayName;
-    defaultValues.email = userInfo.email;
-    reset({ ...defaultValues });
-  }, [userInfo]);
+    const getUser = async () => {
+      if (auth.currentUser) {
+        const docSnap = await getDoc(doc(db, "users", auth.currentUser?.uid));
+        // console.log({ uid: docSnap.id, ...docSnap.data() });
+        setUser({ uid: docSnap.id, ...docSnap.data() });
+      }
+    };
+    getUser();
+  }, [auth?.currentUser]);
+  useEffect(() => {
+    if (user) {
+      let defaultValues = {};
+      defaultValues.displayName = user?.displayName;
+      defaultValues.fullName = user?.fullName || "";
+      defaultValues.email = user?.email;
+      defaultValues.phone_num = user?.phone_num || "";
+      defaultValues.dob = user?.dob || format(new Date(), "dd/MM/yyyy");
+      reset({ ...defaultValues });
+    }
+  }, [user]);
+  useEffect(() => {
+    if (!!user?.dob) {
+      let date = new Date(user.dob.seconds * 1000);
+      setDate(date);
+    }
+  }, [user?.dob]);
   // Handlers, Functions
   const onSubmit = async (data) => {
-    console.log(data);
+    // Variables
+    const displayName = data.displayName;
+    const fullName = data.fullName;
+    const email = data.email;
+    const image = imageDownloadURL || userInfo.photoURL;
+    const password = data.password;
+    const retyped_password = data.retyped_password;
+    const phone_num = data.phone_num.toString();
+    let [day, month, year] = data.dob.split("/");
+    let date = new Date(year, month - 1, day);
+    const dob = Timestamp.fromDate(date);
+    // Update Profile (Hoạt động chưa ổn lắm)
+    try {
+      const user = auth.currentUser;
+      // User re-authenticated.
+      if (!!image) {
+        updateProfile(user, {
+          photoURL: image,
+        });
+      }
+      if (!!displayName) {
+        updateProfile(user, {
+          displayName,
+        });
+      }
+      if (!!password && password === retyped_password) {
+        updatePassword(user, password);
+      }
+      if (!!email) {
+        updateEmail(user, email)
+          .then(() => {
+            // console.log("success");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+
+      // Profile updated
+    } catch (error) {
+      // An error occured
+    }
+    // Update Document
+    try {
+      await updateDoc(doc(db, "users", user.uid), {
+        displayName,
+        fullName,
+        email,
+        image,
+        // password,
+        phone_num,
+        dob,
+      });
+      // Document updated
+    } catch (error) {
+      // An error occured
+    }
   };
   return (
     <form
@@ -74,9 +165,10 @@ const Profile = () => {
           <Label>Full Name</Label>
           <Input
             type="text"
-            name="fullname"
-            id="fullname"
-            placeholder="Enter your fullname"
+            name="fullName"
+            id="fullName"
+            placeholder="Enter your fullName"
+            defaultValue={user?.fullName}
             control={control}
           />
         </InputGroup>
@@ -87,7 +179,7 @@ const Profile = () => {
             name="displayName"
             id="displayName"
             placeholder="Enter your displayname"
-            defaultValue={userInfo.displayName}
+            defaultValue={user?.displayName}
             control={control}
           />
         </InputGroup>
@@ -100,6 +192,7 @@ const Profile = () => {
             name="email"
             id="email"
             placeholder="Enter your email"
+            defaultValue={user?.email}
             control={control}
           />
         </InputGroup>
@@ -110,6 +203,7 @@ const Profile = () => {
             name="phone_num"
             id="phone_num"
             placeholder="Enter your phone number"
+            defaultValue={user?.phone_num.toString()}
             control={control}
           />
         </InputGroup>
@@ -143,6 +237,7 @@ const Profile = () => {
             <DatetimePicker
               name="dob"
               id="dob"
+              defaultDate={date}
               onChange={(date) => {
                 setValue("dob", date);
               }}
@@ -152,7 +247,7 @@ const Profile = () => {
       </div>
       <div className="flex justify-center mt-10">
         <Button type="submit" style={{ width: 300 }}>
-          Add post
+          Update Profile
         </Button>
       </div>
     </form>
@@ -160,9 +255,3 @@ const Profile = () => {
 };
 
 export default Profile;
-// image là đường dẫn không phải là file (Sửa sau, không ảnh hưởng app)
-// tên file là tên user (OK)
-// Fix hết warning (OK)
-//  Fix lỗi khi xóa file không chọn lại được file (OK)
-// tạo các variable để update profile
-// Update profile

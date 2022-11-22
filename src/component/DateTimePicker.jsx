@@ -21,21 +21,21 @@ const DatetimePicker = ({
   onChange,
   ...props
 }) => {
+  // console.log(defaultDate);
   // States, variables, ref
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(defaultDate);
   const [show, setShow] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
   const calendarRef = useRef(null);
   // Effects
   useEffect(() => {
-    setSelectedDate(format(defaultDate, "dd/MM/yyyy"));
+    setSelectedDate(defaultDate);
     // Events listeners
     document.addEventListener("keydown", hideOnEsc, true);
     document.addEventListener("click", hideOnClickOutSide, true);
-  }, []);
+  }, [defaultDate]);
 
   useEffect(() => {
-    onChange(selectedDate);
+    onChange(format(selectedDate, "dd/MM/yyyy"));
   }, [selectedDate]);
   // Functions, Handlers
 
@@ -52,10 +52,7 @@ const DatetimePicker = ({
   };
 
   const handleSelect = (date) => {
-    if (!isDirty) {
-      setIsDirty(true);
-    }
-    setSelectedDate(format(date, "dd/MM/yyyy"));
+    setSelectedDate(date);
   };
 
   const handleToggleShow = () => {
@@ -71,18 +68,16 @@ const DatetimePicker = ({
     >
       <input
         type="text"
-        value={selectedDate}
+        value={format(selectedDate, "dd/MM/yyyy")}
         onClick={handleToggleShow}
         readOnly
         className={`w-full min-w-[332px] p-5 outline-none border border-solid cursor-pointer rounded-lg text-[#84878B] transition-all ease-linear duration-300 ${
-          isDirty
-            ? "border-[#2EBAC1] bg-white"
-            : "border-transparent bg-[#E7ECF3]"
+          show ? "border-[#2EBAC1] bg-white" : "border-transparent bg-[#E7ECF3]"
         }`}
       />
 
       <StyledCalendarElement>
-        {show && <Calendar date={defaultDate} onChange={handleSelect} />}
+        {show && <Calendar date={selectedDate} onChange={handleSelect} />}
       </StyledCalendarElement>
     </div>
   );
