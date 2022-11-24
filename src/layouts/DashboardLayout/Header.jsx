@@ -3,6 +3,8 @@ import { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/auth-context";
+import { auth, db } from "../../firebase/firebase-config";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 // Components
 import Button from "../../component/Button";
 import CompoundLink from "../../component/CompoundLink";
@@ -17,6 +19,27 @@ const StyledHeaderPost = styled.div`
 const Header = () => {
   // States
   const { userInfo } = useAuth();
+  const [user, setUser] = useState(undefined);
+  // Effects
+  useEffect(() => {
+    const getUser = () => {
+      let unsub;
+      if (auth.currentUser) {
+        const docRef = doc(db, "users", auth.currentUser?.uid);
+        unsub = onSnapshot(docRef, (doc) => {
+          setUser({ uid: doc.id, ...doc.data() });
+        });
+      }
+      return unsub;
+    };
+    const unsub = getUser();
+    // Clean up
+    return () => {
+      if (typeof unsub === "function") {
+        unsub();
+      }
+    };
+  }, [auth?.currentUser]);
   return (
     <StyledHeaderPost>
       <div className="flex items-center gap-6 mr-6">
@@ -31,7 +54,7 @@ const Header = () => {
         </Button>
         <CompoundLink to="/dashboard/profile">
           <img
-            src={userInfo?.photoURL || "/image-placeholder.png"}
+            src={user?.image || "/image-placeholder.png"}
             alt=""
             className="w-14 h-14 rounded-full"
           />

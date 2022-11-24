@@ -58,7 +58,6 @@ const SignInPage = () => {
   const { userInfo } = useAuth();
   const navigate = useNavigate();
   const {
-    register,
     handleSubmit,
     control,
     formState: { errors },

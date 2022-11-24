@@ -1,32 +1,15 @@
-import { updateProfile } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase/firebase-config";
 import {
   deleteObject,
   getDownloadURL,
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState } from "react";
 import { storage } from "../firebase/firebase-config";
 
-const useImageInput = (
-  user_uid,
-  defaultImage,
-  setValue,
-  getValues,
-  root = "images",
-  name = ""
-) => {
-  // console.log(user_uid);
-  // States
+const useImageInput = (setValue, getValues, root = "images", name = "") => {
   const [currentProgress, setCurrentProgress] = useState(0);
-  const [imageDownloadURL, setImageDownloadURL] = useState(defaultImage);
-  // Effects
-  useEffect(() => {
-    setImageDownloadURL(defaultImage);
-  }, [defaultImage]);
-  // Handlers
+  const [imageDownloadURL, setImageDownloadURL] = useState("");
   const handleUploadImage = (file) => {
     const img_dir = name ? `${root}/${name}` : `${root}/${file.name}`;
     const storageRef = ref(storage, img_dir);
@@ -49,36 +32,28 @@ const useImageInput = (
       }
     );
   };
-  const handleDeleteImage = async () => {
-    try {
-      if (!!getValues("image_name") || !!name) {
-        const img_dir = name
-          ? `${root}/${name}`
-          : `${root}/${getValues("image_name")}`;
-        // Create a reference to the file to delete
-        const imageRef = ref(storage, img_dir);
+  const handleDeleteImage = () => {
+    const img_dir = name
+      ? `${root}/${name}`
+      : `${root}/${getValues("image_name")}`;
+    // Create a reference to the file to delete
+    const imageRef = ref(storage, img_dir);
 
-        // Delete the file
-        await deleteObject(imageRef);
-      }
-    } catch (error) {
-    } finally {
-      setValue("image", "");
-      if (user_uid) {
-        // await updateProfile(user, {
-        //   photoURL: "",
-        // });
-        await updateDoc(doc(db, "users", user_uid), {
-          image: "",
-        });
-      }
-      setImageDownloadURL("");
-      setCurrentProgress(0);
-    }
+    // Delete the file
+    deleteObject(imageRef)
+      .then(() => {
+        // File deleted successfully
+        setImageDownloadURL("");
+        setCurrentProgress(0);
+      })
+      .catch((error) => {
+        // Uh-oh, an error occurred!
+      });
   };
   const handleSelectImage = (e) => {
     const file = e.target.files[0];
-    setValue("image", file);
+    if (!file) return;
+    setValue("image_name", file.name);
     handleUploadImage(file);
     e.target.value = "";
   };

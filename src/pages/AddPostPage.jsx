@@ -11,6 +11,8 @@ import {
 import { serverTimestamp } from "firebase/firestore";
 import slugify from "slugify";
 import { toast } from "react-toastify";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 // Assets
 import { postStatus } from "../utils/constants";
@@ -28,10 +30,27 @@ import { Dropdown } from "../component/Dropdown";
 import Button from "../component/Button";
 import ImageInput, { useImageInput } from "../component/ImageInput";
 import Toggle from "../component/Toggle";
+import Error from "../component/Error";
 
 const AddPostPage = () => {
   const { userInfo } = useAuth();
-  const { control, watch, setValue, handleSubmit, reset } = useForm({
+  const schema = yup
+    .object({
+      title: yup.string().required("Please enter post's title"),
+      category: yup.string().required("Please choose a category"),
+      slug: yup.string().required("Please enter post's slug"),
+      image: yup.string().required("Please enter post's image"),
+    })
+    .required();
+  const {
+    control,
+    watch,
+    setValue,
+    getValues,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     mode: "onChange",
     defaultValues: {
       title: "",
@@ -41,7 +60,9 @@ const AddPostPage = () => {
       slug: "",
       author: "",
       image: undefined,
+      image_name: "",
     },
+    resolver: yupResolver(schema),
   });
   const watchTitle = watch("title");
   const watchStatus = watch("status");
@@ -57,7 +78,7 @@ const AddPostPage = () => {
     handleUploadImage,
     handleDeleteImage,
     handleSelectImage,
-  ] = useImageInput(watchImage, setValue);
+  ] = useImageInput(null, watchImage, setValue, getValues);
 
   // States
   const [categories, setCategories] = useState([]);
@@ -67,7 +88,7 @@ const AddPostPage = () => {
     const getData = async () => {
       let catList = [];
       const colRef = collection(db, "categories");
-      const q = query(colRef, where("status", "==", "1"));
+      const q = query(colRef, where("status", "==", 1));
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
         // console.log(doc.id, "=>", doc.data());
@@ -88,8 +109,8 @@ const AddPostPage = () => {
     const title = data.title;
     const slug = data.slug;
     const image = imageDownloadURL;
-    const image_name = watchImage.name;
-    const category_id = data.category.id;
+    const image_name = data.image_name;
+    const category_id = data.category?.id;
     const status = data.status;
     const hot = data.hot;
     const createdAt = serverTimestamp();
@@ -147,6 +168,7 @@ const AddPostPage = () => {
               placeholder="Enter post's title"
               control={control}
             />
+            {errors.title?.message && <Error>{errors.title?.message}</Error>}
           </InputGroup>
           <InputGroup>
             <Label>Image</Label>
@@ -157,6 +179,7 @@ const AddPostPage = () => {
               progress={currentProgress}
               image={imageDownloadURL}
             />
+            {errors.image?.message && <Error>{errors.image?.message}</Error>}
           </InputGroup>
           <InputGroup>
             <Label>Is Feature Post</Label>
@@ -178,6 +201,7 @@ const AddPostPage = () => {
               placeholder="Enter post's slug"
               control={control}
             />
+            {errors.slug?.message && <Error>{errors.slug?.message}</Error>}
           </InputGroup>
           <InputGroup minHeight={"270px"}>
             <Label>Category</Label>
@@ -201,6 +225,7 @@ const AddPostPage = () => {
                 {watchCategory?.slug}
               </div>
             )}
+            {errors.category?.message && <Error>{errors.slug?.message}</Error>}
           </InputGroup>
           <InputGroup>
             <Label>Status</Label>

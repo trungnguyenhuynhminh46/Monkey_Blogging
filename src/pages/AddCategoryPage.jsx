@@ -5,6 +5,9 @@ import { useAuth } from "../contexts/auth-context";
 import slugify from "slugify";
 import { useForm } from "react-hook-form";
 import { addDoc, collection } from "firebase/firestore";
+import { toast } from "react-toastify";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 // Assets
 import { categoryStatus } from "../utils/constants";
 import { db } from "../firebase/firebase-config";
@@ -16,19 +19,33 @@ import Input from "../component/Input";
 import Heading from "../layouts/DashboardLayout/Heading";
 import Radio from "../component/Radio";
 import Button from "../component/Button";
-import { toast } from "react-toastify";
+import Error from "../component/Error";
 
 const AddCategoryPage = () => {
   // States
   const [isLoading, setIsLoading] = useState(false);
   const { userInfo } = useAuth();
-  const { control, watch, setValue, handleSubmit, reset } = useForm({
+  const schema = yup
+    .object({
+      name: yup.string().required("Please enter category's name"),
+      slug: yup.string().required("Please enter category's slug"),
+    })
+    .required();
+  const {
+    control,
+    watch,
+    setValue,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     mode: "onChange",
     defaultValues: {
       name: "",
       slug: "",
       status: categoryStatus.UNAPPROVED,
     },
+    resolver: yupResolver(schema),
   });
 
   const watchName = watch("name");
@@ -80,6 +97,7 @@ const AddCategoryPage = () => {
             placeholder="Enter category's name"
             control={control}
           />
+          {errors.name?.message && <Error>{errors.name?.message}</Error>}
         </InputGroup>
         <InputGroup>
           <Label htmlFor="slug">Category's slug</Label>
@@ -90,6 +108,7 @@ const AddCategoryPage = () => {
             placeholder="Enter category's slug"
             control={control}
           />
+          {errors.slug?.message && <Error>{errors.slug?.message}</Error>}
         </InputGroup>
       </div>
       <div className="flex gap-10">

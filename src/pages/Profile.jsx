@@ -2,13 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import format from "date-fns/format";
 import { doc, getDoc, Timestamp, updateDoc } from "firebase/firestore";
-import {
-  reauthenticateWithCredential,
-  updateEmail,
-  updatePassword,
-  updateProfile,
-} from "firebase/auth";
+import { updateEmail, updatePassword, updateProfile } from "firebase/auth";
 import { db, auth } from "../firebase/firebase-config";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 // Assets
 import { useAuth } from "../contexts/auth-context";
 // Components
@@ -19,16 +16,28 @@ import ImageInput, { useImageInput } from "../component/ImageInput";
 import Input from "../component/Input";
 import DatetimePicker from "../component/DateTimePicker";
 import Button from "../component/Button";
+import Error from "../component/Error";
 const Profile = () => {
   // States, variables
   const { userInfo } = useAuth();
   const [user, setUser] = useState(undefined);
   const [date, setDate] = useState(new Date());
-  // console.log(userInfo);
-  // console.log(userInfo.uid);
-  // console.log(auth.currentUser);
 
-  const { control, handleSubmit, reset, setValue, watch } = useForm({
+  const schema = yup
+    .object({
+      fullName: yup.string().required("Please enter your full name"),
+      displayName: yup.string().required("Please enter your display name"),
+    })
+    .required();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    getValues,
+    watch,
+    formState: { errors },
+  } = useForm({
     mode: "onChange",
     defaultValue: {
       displayName: userInfo.displayName,
@@ -40,11 +49,12 @@ const Profile = () => {
       phone_num: user?.phone_num || "",
       dob: user?.dob || format(new Date(), "dd/MM/yyyy"),
     },
+    resolver: yupResolver(schema),
   });
 
   const watchImage = watch("image");
 
-  const [
+  var [
     currentProgress,
     imageDownloadURL,
     setCurrentProgress,
@@ -52,7 +62,14 @@ const Profile = () => {
     handleUploadImage,
     handleDeleteImage,
     handleSelectImage,
-  ] = useImageInput(watchImage, setValue, "avatars", userInfo.displayName);
+  ] = useImageInput(
+    user?.uid,
+    watchImage,
+    setValue,
+    getValues,
+    "avatars",
+    userInfo.displayName
+  );
   // Effect
   // Get user
   useEffect(() => {
@@ -73,6 +90,7 @@ const Profile = () => {
       defaultValues.email = user?.email;
       defaultValues.phone_num = user?.phone_num || "";
       defaultValues.dob = user?.dob || format(new Date(), "dd/MM/yyyy");
+      defaultValues.image = user?.image || "";
       reset({ ...defaultValues });
     }
   }, [user]);
@@ -88,7 +106,7 @@ const Profile = () => {
     const displayName = data.displayName;
     const fullName = data.fullName;
     const email = data.email;
-    const image = imageDownloadURL || userInfo.photoURL;
+    const image = imageDownloadURL || user.image;
     const password = data.password;
     const retyped_password = data.retyped_password;
     const phone_num = data.phone_num.toString();
@@ -128,7 +146,7 @@ const Profile = () => {
     }
     // Update Document
     try {
-      await updateDoc(doc(db, "users", user.uid), {
+      await updateDoc(doc(db, "users", user?.uid), {
         displayName,
         fullName,
         email,
@@ -171,6 +189,9 @@ const Profile = () => {
             defaultValue={user?.fullName}
             control={control}
           />
+          {errors.fullName?.message && (
+            <Error>{errors.fullName?.message}</Error>
+          )}
         </InputGroup>
         <InputGroup>
           <Label>Displayname</Label>
@@ -182,6 +203,9 @@ const Profile = () => {
             defaultValue={user?.displayName}
             control={control}
           />
+          {errors.displayName?.message && (
+            <Error>{errors.displayName?.message}</Error>
+          )}
         </InputGroup>
       </div>
       <div className="flex gap-10">
