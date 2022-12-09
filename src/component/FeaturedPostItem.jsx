@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { collection, doc, getDoc, query } from "firebase/firestore";
 import { db } from "../firebase/firebase-config";
 import { format } from "date-fns";
+// Assets
+import { convertDateFormat } from "../utils/date";
 // Components
 import Badge from "./Badge";
 import InfoDetail from "../component/InfoDetail";
@@ -68,12 +70,6 @@ const FeaturedPostItem = ({ data }) => {
     };
     fetchData();
   }, []);
-  // Handlers, Functions
-  const convertDateFormat = (seconds) => {
-    const date = new Date(1000 * seconds);
-    const formattedDate = format(date, "MMM d y");
-    return formattedDate;
-  };
   return (
     <StyledFeaturedPostItem>
       <img src={data?.image} alt="" className="post__bg_img" />

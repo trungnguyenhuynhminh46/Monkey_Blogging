@@ -3,6 +3,9 @@ import styled from "styled-components";
 import { collection, getDocs, query, where } from "firebase/firestore";
 // Assets
 import { db } from "../firebase/firebase-config";
+import { getAllPosts } from "../services/posts";
+import { getAllCategories, getCategoryByID } from "../services/categories";
+import { getUserByID } from "../services/users";
 // Components
 import Heading from "../layouts/DashboardLayout/Heading";
 import Table from "../component/Table";
@@ -26,23 +29,37 @@ const StyledButton = styled.span`
 
 const PostsPage = () => {
   // States
+  const [categoriesByUserID, setCategoriesByUserID] = useState({});
+  const [authorsByUserID, setAuthorByUserID] = useState({});
   const [categories, setCategories] = useState([]);
+  const [posts, setPosts] = useState([]);
   // Effect
+  // Fetching Datas
   useEffect(() => {
     const fetchCategories = async () => {
-      const categoriesQuery = query(
-        collection(db, "categories"),
-        where("status", "==", 1)
-      );
-      const querySnap = await getDocs(categoriesQuery);
-      let catsList = [];
-      querySnap.forEach((category) => {
-        catsList.push({ id: category.id, ...category.data() });
-      });
+      let catsList = await getAllCategories();
       setCategories(catsList);
     };
+    const fetchPosts = async () => {
+      let postsList = await getAllPosts();
+      postsList.forEach(async (post) => {
+        const category = await getCategoryByID(post.category_id);
+        const author = await getUserByID(post.user_id);
+        setCategoriesByUserID((prev) => {
+          return { ...prev, [post.id]: category };
+        });
+        setAuthorByUserID((prev) => {
+          return { ...prev, [post.id]: author };
+        });
+      });
+      setPosts(postsList);
+    };
     fetchCategories();
+    fetchPosts();
   }, []);
+  useEffect(() => {
+    console.log(posts[0]?.cat);
+  }, [posts]);
   return (
     <div className="flex-1 mb-[40px]">
       <Heading>Manage Posts</Heading>
@@ -88,48 +105,53 @@ const PostsPage = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td></td>
-            <td>01</td>
-            <td>
-              <div className="flex gap-4">
-                <img
-                  src="https://images.unsplash.com/photo-1668365187350-05c997d09eba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwzfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=1000&q=60"
-                  alt=""
-                  className="w-12 h-auto rounded"
-                />
-                <div className="flex flex-col">
-                  <h1 className="font-semibold">One Special 4K Camera</h1>
-                  <span>Date: 25 Oct 2021</span>
-                </div>
-              </div>
-            </td>
-            <td>
-              <span className="text-gray-500">Camera Gear</span>
-            </td>
-            <td>
-              <span className="text-gray-500">Hanna</span>
-            </td>
-            <td>
-              <div className="flex items-center gap-x-3 text-gray-500">
-                <StyledButton>
-                  <Icons.IconEye iconClassName="w-5 h-5" />
-                </StyledButton>
-                <StyledButton>
-                  <Icons.IconPencilSquare iconClassName="w-5 h-5" />
-                </StyledButton>
-                <StyledButton>
-                  <Icons.IconTrashCan iconClassName="w-5 h-5" />
-                </StyledButton>
-              </div>
-            </td>
-          </tr>
-          <tr></tr>
+          {!!posts &&
+            posts.map((post, index) => {
+              return (
+                <tr key={post.id}>
+                  <td></td>
+                  <td>{post.id}</td>
+                  <td>
+                    <div className="flex gap-4">
+                      <img
+                        src={post.image}
+                        alt=""
+                        className="w-16 h-auto rounded"
+                      />
+                      <div className="flex flex-col">
+                        <h1 className="font-semibold">{post.title}</h1>
+                        <span>Date: 25 Oct 2021</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span className="text-gray-500">
+                      {categoriesByUserID[post.id]?.name}
+                    </span>
+                  </td>
+                  <td>
+                    <span className="text-gray-500">
+                      {authorsByUserID[post.id]?.displayName}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="flex items-center gap-x-3 text-gray-500">
+                      <StyledButton>
+                        <Icons.IconEye iconClassName="w-5 h-5" />
+                      </StyledButton>
+                      <StyledButton>
+                        <Icons.IconPencilSquare iconClassName="w-5 h-5" />
+                      </StyledButton>
+                      <StyledButton>
+                        <Icons.IconTrashCan iconClassName="w-5 h-5" />
+                      </StyledButton>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </Table>
-      <div className="mt-10 flex justify-center">
-        <Pagination></Pagination>
-      </div>
     </div>
   );
 };

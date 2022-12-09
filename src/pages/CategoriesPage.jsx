@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+// Assets
+import { getAllCategories } from "../services/categories";
 // Components
 import Heading from "../layouts/DashboardLayout/Heading";
 import Button from "../component/Button";
 import Icons from "../component/Icons";
 import Table from "../component/Table";
 import Pagination from "../component/Pagination";
+import Badge from "../component/Badge";
 
 const StyledButton = styled.span`
   display: flex;
@@ -21,6 +24,19 @@ const StyledButton = styled.span`
 `;
 
 const CategoriesPage = () => {
+  const status = {
+    1: "Approved",
+    2: "Unapproved",
+  };
+  const [categories, setCategories] = useState([]);
+  // Effect
+  useEffect(() => {
+    const fetchCategories = async () => {
+      let catsList = await getAllCategories();
+      setCategories(catsList);
+    };
+    fetchCategories();
+  });
   return (
     <div className="flex-1 mb-[40px]">
       <Heading>Manage Categories</Heading>
@@ -49,43 +65,48 @@ const CategoriesPage = () => {
             <th>Id</th>
             <th>Name</th>
             <th>Slug</th>
-            <th>Author</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td></td>
-            <td>01</td>
-            <td>
-              <span className="text-gray-500">Tên danh mục</span>
-            </td>
-            <td>
-              <span className="text-gray-500">ten-danh-muc</span>
-            </td>
-            <td>
-              <span className="text-gray-500">Hanna</span>
-            </td>
-            <td>
-              <div className="flex items-center gap-x-3 text-gray-500">
-                <StyledButton>
-                  <Icons.IconEye iconClassName="w-5 h-5" />
-                </StyledButton>
-                <StyledButton>
-                  <Icons.IconPencilSquare iconClassName="w-5 h-5" />
-                </StyledButton>
-                <StyledButton>
-                  <Icons.IconTrashCan iconClassName="w-5 h-5" />
-                </StyledButton>
-              </div>
-            </td>
-          </tr>
-          <tr></tr>
+          {categories.map((category) => {
+            return (
+              <tr key={category.id}>
+                <td></td>
+                <td>{category.id}</td>
+                <td>
+                  <span className="text-gray-500">{category.name}</span>
+                </td>
+                <td>
+                  <span className="text-gray-500">{category.slug}</span>
+                </td>
+                <td>
+                  <span className="text-gray-500">
+                    <Badge>{status[category.status]}</Badge>
+                  </span>
+                </td>
+                <td>
+                  <div className="flex items-center gap-x-3 text-gray-500">
+                    <StyledButton>
+                      <Icons.IconEye iconClassName="w-5 h-5" />
+                    </StyledButton>
+                    <StyledButton>
+                      <Icons.IconPencilSquare iconClassName="w-5 h-5" />
+                    </StyledButton>
+                    <StyledButton>
+                      <Icons.IconTrashCan iconClassName="w-5 h-5" />
+                    </StyledButton>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
-      <div className="mt-10 flex justify-center">
+      {/* <div className="mt-10 flex justify-center">
         <Pagination></Pagination>
-      </div>
+      </div> */}
     </div>
   );
 };
