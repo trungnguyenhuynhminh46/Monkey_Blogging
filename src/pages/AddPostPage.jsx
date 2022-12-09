@@ -38,7 +38,7 @@ const AddPostPage = () => {
   const schema = yup
     .object({
       title: yup.string().required("Please enter post's title"),
-      category: yup.string().required("Please choose a category"),
+      category: yup.object().required("Please choose a category"),
       slug: yup.string().required("Please enter post's slug"),
       image: yup.string().required("Please enter post's image"),
     })
@@ -95,6 +95,9 @@ const AddPostPage = () => {
   useEffect(() => {
     setValue("slug", slugify(watchTitle, { lower: true }));
   }, [watchTitle]);
+  // useEffect(() => {
+  //   console.log(errors);
+  // }, [errors]);
   // Handlers
   const onSubmit = async (data) => {
     setIsLoading(true);

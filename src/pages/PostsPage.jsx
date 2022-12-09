@@ -21,6 +21,7 @@ import Icons from "../component/Icons";
 import { Dropdown } from "../component/Dropdown";
 import Button from "../component/Button";
 import Swal from "sweetalert2";
+import Badge from "../component/Badge";
 
 const StyledButton = styled.span`
   display: flex;
@@ -36,6 +37,11 @@ const StyledButton = styled.span`
 `;
 
 const PostsPage = () => {
+  const status = {
+    1: "Approved",
+    2: "Pending",
+    3: "Rejected",
+  };
   // States
   const [categoriesByUserID, setCategoriesByUserID] = useState({});
   const [authorsByUserID, setAuthorByUserID] = useState({});
@@ -108,6 +114,7 @@ const PostsPage = () => {
             <th>Post</th>
             <th>Category</th>
             <th>Author</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -141,6 +148,9 @@ const PostsPage = () => {
                     </span>
                   </td>
                   <td>
+                    <Badge>{status[post.status]}</Badge>
+                  </td>
+                  <td>
                     <div className="flex items-center gap-x-3 text-gray-500">
                       <StyledButton>
                         <Icons.IconEye iconClassName="w-5 h-5" />
@@ -161,11 +171,7 @@ const PostsPage = () => {
                           }).then(async (result) => {
                             if (result.isConfirmed) {
                               await deleteDoc(doc(db, "posts", post.id));
-                              Swal.fire(
-                                "Deleted!",
-                                "Your post has been deleted.",
-                                "success"
-                              );
+                              document.location.reload(true);
                             }
                           });
                         }}

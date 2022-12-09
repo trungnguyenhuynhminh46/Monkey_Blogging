@@ -8,10 +8,13 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/firebase-config";
 
-const getAllPosts = async () => {
-  const postsQuery = query(collection(db, "posts"), where("status", "==", 1));
-  const postsSnap = await getDocs(postsQuery);
+const getAllPosts = async (status = null) => {
+  let postsQuery = query(collection(db, "posts"));
+  if (status !== null) {
+    postsQuery = query(collection(db, "posts"), where("status", "==", status));
+  }
   let postsList = [];
+  const postsSnap = await getDocs(postsQuery);
   postsSnap.forEach(async (post) => {
     postsList.push({ id: post.id, ...post.data() });
   });

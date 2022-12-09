@@ -39,7 +39,7 @@ const CategoriesPage = () => {
       setCategories(catsList);
     };
     fetchCategories();
-  });
+  }, []);
   return (
     <div className="flex-1 mb-[40px]">
       <Heading>Manage Categories</Heading>
@@ -108,6 +108,7 @@ const CategoriesPage = () => {
                         }).then(async (result) => {
                           if (result.isConfirmed) {
                             await deleteDoc(doc(db, "categories", category.id));
+                            document.location.reload(true);
                             Swal.fire(
                               "Deleted!",
                               "Your category has been deleted.",
