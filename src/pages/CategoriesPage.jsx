@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { deleteDoc, doc } from "firebase/firestore";
 // Assets
 import { getAllCategories } from "../services/categories";
+import { db } from "../firebase/firebase-config";
 // Components
 import Heading from "../layouts/DashboardLayout/Heading";
 import Button from "../component/Button";
@@ -9,6 +11,7 @@ import Icons from "../component/Icons";
 import Table from "../component/Table";
 import Pagination from "../component/Pagination";
 import Badge from "../component/Badge";
+import Swal from "sweetalert2";
 
 const StyledButton = styled.span`
   display: flex;
@@ -61,7 +64,6 @@ const CategoriesPage = () => {
       <Table>
         <thead>
           <tr>
-            <th></th>
             <th>Id</th>
             <th>Name</th>
             <th>Slug</th>
@@ -73,7 +75,6 @@ const CategoriesPage = () => {
           {categories.map((category) => {
             return (
               <tr key={category.id}>
-                <td></td>
                 <td>{category.id}</td>
                 <td>
                   <span className="text-gray-500">{category.name}</span>
@@ -94,7 +95,28 @@ const CategoriesPage = () => {
                     <StyledButton>
                       <Icons.IconPencilSquare iconClassName="w-5 h-5" />
                     </StyledButton>
-                    <StyledButton>
+                    <StyledButton
+                      onClick={() => {
+                        Swal.fire({
+                          title: "Are you sure?",
+                          text: "You won't be able to revert this!",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonColor: "#3085d6",
+                          cancelButtonColor: "#d33",
+                          confirmButtonText: "Yes, delete it!",
+                        }).then(async (result) => {
+                          if (result.isConfirmed) {
+                            await deleteDoc(doc(db, "categories", category.id));
+                            Swal.fire(
+                              "Deleted!",
+                              "Your category has been deleted.",
+                              "success"
+                            );
+                          }
+                        });
+                      }}
+                    >
                       <Icons.IconTrashCan iconClassName="w-5 h-5" />
                     </StyledButton>
                   </div>

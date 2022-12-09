@@ -26,6 +26,7 @@
     "sass": "^1.55.0",
     "slugify": "^1.6.5",
     "styled-components": "^5.3.6",
+    "sweetalert2": "^11.6.15",
     "uid": "^2.0.1",
     "uuid": "^9.0.0",
     "yup": "^0.32.11"

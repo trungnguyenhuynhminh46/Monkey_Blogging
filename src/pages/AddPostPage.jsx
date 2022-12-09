@@ -19,6 +19,7 @@ import { postStatus } from "../utils/constants";
 import { db } from "../firebase/firebase-config";
 import { uid } from "uid";
 import { useAuth } from "../contexts/auth-context";
+import { getAllCategories } from "../services/categories";
 
 // Components
 import InputGroup from "../component/InputGroup";
@@ -86,16 +87,8 @@ const AddPostPage = () => {
   // Effect
   useEffect(() => {
     const getData = async () => {
-      let catList = [];
-      const colRef = collection(db, "categories");
-      const q = query(colRef, where("status", "==", 1));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        // console.log(doc.id, "=>", doc.data());
-        catList.push({ id: doc.id, ...doc.data() });
-      });
-      // console.log(catList);
-      setCategories(catList);
+      let catsList = await getAllCategories(1);
+      setCategories(catsList);
     };
     getData();
   }, []);

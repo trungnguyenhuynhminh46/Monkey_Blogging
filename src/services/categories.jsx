@@ -8,11 +8,14 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/firebase-config";
 
-const getAllCategories = async () => {
-  const categoriesQuery = query(
-    collection(db, "categories"),
-    where("status", "==", 1)
-  );
+const getAllCategories = async (status = null) => {
+  let categoriesQuery = query(collection(db, "categories"));
+  if (status !== null) {
+    categoriesQuery = query(
+      collection(db, "categories"),
+      where("status", "==", status)
+    );
+  }
   const querySnap = await getDocs(categoriesQuery);
   let catsList = [];
   querySnap.forEach((category) => {

@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 // Assets
 import { db } from "../firebase/firebase-config";
 import { getAllPosts } from "../services/posts";
@@ -13,6 +20,7 @@ import Pagination from "../component/Pagination";
 import Icons from "../component/Icons";
 import { Dropdown } from "../component/Dropdown";
 import Button from "../component/Button";
+import Swal from "sweetalert2";
 
 const StyledButton = styled.span`
   display: flex;
@@ -37,7 +45,7 @@ const PostsPage = () => {
   // Fetching Datas
   useEffect(() => {
     const fetchCategories = async () => {
-      let catsList = await getAllCategories();
+      let catsList = await getAllCategories(1);
       setCategories(catsList);
     };
     const fetchPosts = async () => {
@@ -96,7 +104,6 @@ const PostsPage = () => {
       <Table>
         <thead>
           <tr>
-            <th></th>
             <th>Id</th>
             <th>Post</th>
             <th>Category</th>
@@ -109,7 +116,6 @@ const PostsPage = () => {
             posts.map((post, index) => {
               return (
                 <tr key={post.id}>
-                  <td></td>
                   <td>{post.id}</td>
                   <td>
                     <div className="flex gap-4">
@@ -142,7 +148,28 @@ const PostsPage = () => {
                       <StyledButton>
                         <Icons.IconPencilSquare iconClassName="w-5 h-5" />
                       </StyledButton>
-                      <StyledButton>
+                      <StyledButton
+                        onClick={() => {
+                          Swal.fire({
+                            title: "Are you sure?",
+                            text: "You won't be able to revert this!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Yes, delete it!",
+                          }).then(async (result) => {
+                            if (result.isConfirmed) {
+                              await deleteDoc(doc(db, "posts", post.id));
+                              Swal.fire(
+                                "Deleted!",
+                                "Your post has been deleted.",
+                                "success"
+                              );
+                            }
+                          });
+                        }}
+                      >
                         <Icons.IconTrashCan iconClassName="w-5 h-5" />
                       </StyledButton>
                     </div>
