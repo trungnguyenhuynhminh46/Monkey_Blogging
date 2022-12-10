@@ -8,12 +8,25 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/firebase-config";
 
-const getAllCategories = async (status = null) => {
+const getAllCategories = async (status = null, query_string = "") => {
   let categoriesQuery = query(collection(db, "categories"));
   if (status !== null) {
+    if (!!query_string) {
+      categoriesQuery = query(
+        collection(db, "categories"),
+        where("status", "==", status),
+        where("name", "==", query_string)
+      );
+    } else {
+      categoriesQuery = query(
+        collection(db, "categories"),
+        where("status", "==", status)
+      );
+    }
+  } else if (!!query_string) {
     categoriesQuery = query(
       collection(db, "categories"),
-      where("status", "==", status)
+      where("name", "==", query_string)
     );
   }
   const querySnap = await getDocs(categoriesQuery);

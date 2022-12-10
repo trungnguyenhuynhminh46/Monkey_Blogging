@@ -13,6 +13,8 @@ import { db } from "../firebase/firebase-config";
 import { getAllPosts } from "../services/posts";
 import { getAllCategories, getCategoryByID } from "../services/categories";
 import { getUserByID } from "../services/users";
+import { convertDateFormat } from "../utils/date";
+import { debounce } from "lodash";
 // Components
 import Heading from "../layouts/DashboardLayout/Heading";
 import Table from "../component/Table";
@@ -45,6 +47,7 @@ const PostsPage = () => {
     3: "Rejected",
   };
   // States
+  const [searchInput, setSearchInput] = useState("");
   const [categoriesByUserID, setCategoriesByUserID] = useState({});
   const [authorsByUserID, setAuthorByUserID] = useState({});
   const [categories, setCategories] = useState([]);
@@ -57,7 +60,7 @@ const PostsPage = () => {
       setCategories(catsList);
     };
     const fetchPosts = async () => {
-      let postsList = await getAllPosts();
+      let postsList = await getAllPosts(null, searchInput);
       postsList.forEach(async (post) => {
         const category = await getCategoryByID(post.category_id);
         const author = await getUserByID(post.user_id);
@@ -72,7 +75,11 @@ const PostsPage = () => {
     };
     fetchCategories();
     fetchPosts();
-  }, []);
+  }, [searchInput]);
+  // Handlers, functions
+  const handleInputSeach = debounce((e) => {
+    setSearchInput(e.target.value);
+  }, 600);
   return (
     <div className="flex-1 mb-[40px]">
       <Heading>Manage Posts</Heading>
@@ -86,7 +93,7 @@ const PostsPage = () => {
         >
           Add post
         </Button>
-        <div className="flex-1 flex justify-end items-center gap-x-5">
+        <div className="flex-1 flex justify-end items-stretch gap-x-5">
           <Dropdown style={{ maxWidth: 300 }} selectionBG="white">
             {categories.map((category) => {
               return (
@@ -102,6 +109,8 @@ const PostsPage = () => {
             id=""
             placeholder="Search category..."
             className="p-4 w-full max-w-[300px] outline-none border border-gray-200 rounded-lg"
+            defaultValue={searchInput}
+            onChange={handleInputSeach}
           />
         </div>
       </div>
@@ -128,11 +137,11 @@ const PostsPage = () => {
                       <img
                         src={post.image}
                         alt=""
-                        className="w-16 h-auto rounded"
+                        className="w-[80px] h-auto rounded object-cover"
                       />
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-1">
                         <h1 className="font-semibold">{post.title}</h1>
-                        <span>Date: 25 Oct 2021</span>
+                        <span>{convertDateFormat(post.createdAt.seconds)}</span>
                       </div>
                     </div>
                   </td>

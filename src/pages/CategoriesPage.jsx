@@ -13,6 +13,7 @@ import Pagination from "../component/Pagination";
 import Badge from "../component/Badge";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { debounce } from "lodash";
 
 const StyledButton = styled.span`
   display: flex;
@@ -28,6 +29,7 @@ const StyledButton = styled.span`
 `;
 
 const CategoriesPage = () => {
+  const [searchInput, setInputSearch] = useState("");
   const status = {
     1: "Approved",
     2: "Unapproved",
@@ -37,15 +39,19 @@ const CategoriesPage = () => {
   // Effect
   useEffect(() => {
     const fetchCategories = async () => {
-      let catsList = await getAllCategories();
+      let catsList = await getAllCategories(null, searchInput);
       setCategories(catsList);
     };
     fetchCategories();
-  }, []);
+  }, [searchInput]);
+  // Handlers, functions
+  const handleInputSearch = debounce((e) => {
+    setInputSearch(e.target.value);
+  }, 600);
   return (
     <div className="flex-1 mb-[40px]">
       <Heading>Manage Categories</Heading>
-      <div className="flex justify-between items-center px-10">
+      <div className="flex justify-between items-stretch px-10">
         <Button
           style={{ width: 192 }}
           fontSize={"18px"}
@@ -60,7 +66,8 @@ const CategoriesPage = () => {
           name=""
           id=""
           placeholder="Search post..."
-          className="flex-1 p-4 w-full max-w-[300px] outline-none border border-gray-200 rounded-lg"
+          className="flex-1 p-4 w-full max-w-[300px] my-4 outline-none border border-gray-200 rounded-lg"
+          onChange={handleInputSearch}
         />
       </div>
       <Table>
