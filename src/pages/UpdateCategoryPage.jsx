@@ -1,28 +1,30 @@
-// Library
-import React, { useState } from "react";
-import { useEffect } from "react";
-import { useAuth } from "../contexts/auth-context";
-import slugify from "slugify";
-import { useForm } from "react-hook-form";
-import { addDoc, collection } from "firebase/firestore";
-import { toast } from "react-toastify";
+// Libraries
 import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useSearchParams } from "react-router-dom";
 import * as yup from "yup";
+import slugify from "slugify";
+import { toast } from "react-toastify";
+import { doc, updateDoc } from "firebase/firestore";
 // Assets
+import { getCategoryByID } from "../services/categories";
 import { categoryStatus } from "../utils/constants";
 import { db } from "../firebase/firebase-config";
-
 // Components
+import Input from "../component/Input";
 import InputGroup from "../component/InputGroup";
 import Label from "../component/Label";
-import Input from "../component/Input";
 import Heading from "../layouts/DashboardLayout/Heading";
 import Radio from "../component/Radio";
 import Button from "../component/Button";
 import Error from "../component/Error";
 
-const AddCategoryPage = () => {
+const UpdateCategoryPage = () => {
+  const [params] = useSearchParams();
+  const cat_id = params.get("id");
   // States
+  const [category, setCategory] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const schema = yup
     .object({
@@ -51,30 +53,43 @@ const AddCategoryPage = () => {
   const watchStatus = watch("status");
   // Effect
   useEffect(() => {
-    setValue("slug", slugify(watchName, { lower: true }));
+    (async () => {
+      const cat = await getCategoryByID(cat_id);
+      setCategory(cat);
+    })();
+  }, [cat_id]);
+  useEffect(() => {
+    if (category) {
+      let defaultValues = {};
+      defaultValues.name = category.name;
+      defaultValues.slug = category.slug;
+      defaultValues.status = category.status;
+      // console.log(defaultValues);
+      reset({ ...defaultValues });
+    }
+  }, [category]);
+  useEffect(() => {
+    if (watchName) {
+      setValue("slug", slugify(watchName, { lower: true }));
+    }
   }, [watchName]);
-  // Handlers, Funcitons
+  // Handlers, functions
   const onSubmit = async (data) => {
     setIsLoading(true);
     // Variables
     const name = data.name;
     const slug = data.slug;
     const status = data.status;
-    // Add category
-    const docRef = await addDoc(collection(db, "categories"), {
+    console.log({ name, slug, status });
+    // Update doc
+    await updateDoc(doc(db, "categories", cat_id), {
       name,
       slug,
       status,
     });
-    // Reset
-    reset({
-      name: "",
-      slug: "",
-      status: categoryStatus.UNAPPROVED,
-    });
-    // UI
     setIsLoading(false);
-    toast.success("Successfully add category!!!", {
+    setIsLoading(false);
+    toast.success("Successfully update category!!!", {
       autoClose: 5000,
       pauseOnHover: false,
     });
@@ -137,11 +152,11 @@ const AddCategoryPage = () => {
       </div>
       <div className="flex justify-center mt-10">
         <Button type="submit" style={{ width: 300 }} isLoading={isLoading}>
-          Add category
+          Update category
         </Button>
       </div>
     </form>
   );
 };
 
-export default AddCategoryPage;
+export default UpdateCategoryPage;

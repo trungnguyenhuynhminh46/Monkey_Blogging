@@ -79,7 +79,7 @@ const AddPostPage = () => {
     handleUploadImage,
     handleDeleteImage,
     handleSelectImage,
-  ] = useImageInput(null, watchImage, setValue, getValues);
+  ] = useImageInput(null, undefined, setValue, getValues, "images", "");
 
   // States
   const [categories, setCategories] = useState([]);
@@ -105,7 +105,7 @@ const AddPostPage = () => {
     const title = data.title;
     const slug = data.slug;
     const image = imageDownloadURL;
-    const image_name = data.image_name;
+    const image_name = watchImage.name;
     const category_id = data.category?.id;
     const status = data.status;
     const hot = data.hot;

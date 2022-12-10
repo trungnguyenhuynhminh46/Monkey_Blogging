@@ -16,7 +16,8 @@ const useImageInput = (
   setValue,
   getValues,
   root = "images",
-  name = ""
+  name = "",
+  post_id
 ) => {
   // console.log(user_uid);
   // States
@@ -70,6 +71,12 @@ const useImageInput = (
         // });
         await updateDoc(doc(db, "users", user_uid), {
           image: "",
+        });
+      }
+      if (!!post_id) {
+        await updateDoc(doc(db, "posts", post_id), {
+          image: "",
+          image_name: "",
         });
       }
       setImageDownloadURL("");

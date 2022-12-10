@@ -24,6 +24,9 @@ const getAllPosts = async (status = null) => {
 const getPostByID = async (post_id) => {
   const postRef = doc(db, "posts", post_id);
   const docSnap = await getDoc(postRef);
+  if (!docSnap.exists()) {
+    return undefined;
+  }
   return { id: docSnap.id, ...docSnap.data() };
 };
 

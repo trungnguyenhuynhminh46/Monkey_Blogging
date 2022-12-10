@@ -22,6 +22,7 @@ import { Dropdown } from "../component/Dropdown";
 import Button from "../component/Button";
 import Swal from "sweetalert2";
 import Badge from "../component/Badge";
+import { useNavigate } from "react-router-dom";
 
 const StyledButton = styled.span`
   display: flex;
@@ -37,6 +38,7 @@ const StyledButton = styled.span`
 `;
 
 const PostsPage = () => {
+  const navigate = useNavigate();
   const status = {
     1: "Approved",
     2: "Pending",
@@ -71,9 +73,6 @@ const PostsPage = () => {
     fetchCategories();
     fetchPosts();
   }, []);
-  useEffect(() => {
-    console.log(posts[0]?.cat);
-  }, [posts]);
   return (
     <div className="flex-1 mb-[40px]">
       <Heading>Manage Posts</Heading>
@@ -155,7 +154,11 @@ const PostsPage = () => {
                       <StyledButton>
                         <Icons.IconEye iconClassName="w-5 h-5" />
                       </StyledButton>
-                      <StyledButton>
+                      <StyledButton
+                        onClick={() => {
+                          navigate(`/dashboard/update-post?id=${post.id}`);
+                        }}
+                      >
                         <Icons.IconPencilSquare iconClassName="w-5 h-5" />
                       </StyledButton>
                       <StyledButton

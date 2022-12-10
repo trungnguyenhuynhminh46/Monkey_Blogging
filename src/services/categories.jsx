@@ -27,6 +27,9 @@ const getAllCategories = async (status = null) => {
 const getCategoryByID = async (category_id) => {
   const docRef = doc(db, "categories", category_id);
   const docSnap = await getDoc(docRef);
+  if (!docSnap.exists()) {
+    return undefined;
+  }
   return { id: docSnap.id, ...docSnap.data() };
 };
 

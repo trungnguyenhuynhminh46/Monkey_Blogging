@@ -12,6 +12,7 @@ import Table from "../component/Table";
 import Pagination from "../component/Pagination";
 import Badge from "../component/Badge";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const StyledButton = styled.span`
   display: flex;
@@ -31,6 +32,7 @@ const CategoriesPage = () => {
     1: "Approved",
     2: "Unapproved",
   };
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   // Effect
   useEffect(() => {
@@ -92,7 +94,13 @@ const CategoriesPage = () => {
                     <StyledButton>
                       <Icons.IconEye iconClassName="w-5 h-5" />
                     </StyledButton>
-                    <StyledButton>
+                    <StyledButton
+                      onClick={() => {
+                        navigate(
+                          `/dashboard/update-category?id=${category.id}`
+                        );
+                      }}
+                    >
                       <Icons.IconPencilSquare iconClassName="w-5 h-5" />
                     </StyledButton>
                     <StyledButton
@@ -109,11 +117,6 @@ const CategoriesPage = () => {
                           if (result.isConfirmed) {
                             await deleteDoc(doc(db, "categories", category.id));
                             document.location.reload(true);
-                            Swal.fire(
-                              "Deleted!",
-                              "Your category has been deleted.",
-                              "success"
-                            );
                           }
                         });
                       }}
