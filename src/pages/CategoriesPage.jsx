@@ -1,40 +1,19 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { deleteDoc, doc } from "firebase/firestore";
 // Assets
 import { getAllCategories } from "../services/categories";
 import { db } from "../firebase/firebase-config";
 // Components
 import Heading from "../layouts/DashboardLayout/Heading";
 import Button from "../component/Button";
-import Icons from "../component/Icons";
-import Table from "../component/Table";
 import Pagination from "../component/Pagination";
-import Badge from "../component/Badge";
-import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
+import Categories from "./modules/Dashboard/Categories";
 
-const StyledButton = styled.span`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  width: 40px;
-  height: 40px;
-
-  border-radius: 4px;
-  border: 1px solid rgb(229 231 235);
-  cursor: pointer;
-`;
+const CATEGORIES_PER_PAGE = 3;
 
 const CategoriesPage = () => {
   const [searchInput, setInputSearch] = useState("");
-  const status = {
-    1: "Approved",
-    2: "Unapproved",
-  };
-  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
   const [categories, setCategories] = useState([]);
   // Effect
   useEffect(() => {
@@ -43,11 +22,19 @@ const CategoriesPage = () => {
       setCategories(catsList);
     };
     fetchCategories();
+    setCurrentPage(1);
   }, [searchInput]);
   // Handlers, functions
   const handleInputSearch = debounce((e) => {
     setInputSearch(e.target.value);
   }, 600);
+  // Paginations
+  const indexOfLastCategory = currentPage * CATEGORIES_PER_PAGE - 1;
+  const indeOfFirstCategory = indexOfLastCategory - CATEGORIES_PER_PAGE + 1;
+  const currentCategories = categories.slice(
+    indeOfFirstCategory,
+    indexOfLastCategory + 1
+  );
   return (
     <div className="flex-1 mb-[40px]">
       <Heading>Manage Categories</Heading>
@@ -70,76 +57,17 @@ const CategoriesPage = () => {
           onChange={handleInputSearch}
         />
       </div>
-      <Table>
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Slug</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {categories.map((category) => {
-            return (
-              <tr key={category.id}>
-                <td>{category.id}</td>
-                <td>
-                  <span className="text-gray-500">{category.name}</span>
-                </td>
-                <td>
-                  <span className="text-gray-500">{category.slug}</span>
-                </td>
-                <td>
-                  <span className="text-gray-500">
-                    <Badge>{status[category.status]}</Badge>
-                  </span>
-                </td>
-                <td>
-                  <div className="flex items-center gap-x-3 text-gray-500">
-                    <StyledButton>
-                      <Icons.IconEye iconClassName="w-5 h-5" />
-                    </StyledButton>
-                    <StyledButton
-                      onClick={() => {
-                        navigate(
-                          `/dashboard/update-category?id=${category.id}`
-                        );
-                      }}
-                    >
-                      <Icons.IconPencilSquare iconClassName="w-5 h-5" />
-                    </StyledButton>
-                    <StyledButton
-                      onClick={() => {
-                        Swal.fire({
-                          title: "Are you sure?",
-                          text: "You won't be able to revert this!",
-                          icon: "warning",
-                          showCancelButton: true,
-                          confirmButtonColor: "#3085d6",
-                          cancelButtonColor: "#d33",
-                          confirmButtonText: "Yes, delete it!",
-                        }).then(async (result) => {
-                          if (result.isConfirmed) {
-                            await deleteDoc(doc(db, "categories", category.id));
-                            document.location.reload(true);
-                          }
-                        });
-                      }}
-                    >
-                      <Icons.IconTrashCan iconClassName="w-5 h-5" />
-                    </StyledButton>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-      {/* <div className="mt-10 flex justify-center">
-        <Pagination></Pagination>
-      </div> */}
+      {currentCategories.length > 0 && (
+        <Categories categories={currentCategories} />
+      )}
+      <div className="mt-10 flex justify-center">
+        <Pagination
+          itemsPerPage={CATEGORIES_PER_PAGE}
+          totalItems={categories.length}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        ></Pagination>
+      </div>
     </div>
   );
 };

@@ -27,10 +27,28 @@ const StyledPagination = styled.div`
   }
 `;
 
-const Pagination = () => {
+const Pagination = ({
+  itemsPerPage,
+  totalItems,
+  currentPage,
+  setCurrentPage,
+}) => {
+  const pageNumbers = [];
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
   return (
     <StyledPagination>
-      <span className="prev">
+      <span
+        className="prev"
+        onClick={() => {
+          currentPage >= 2 &&
+            setCurrentPage((prev) => {
+              return prev - 1;
+            });
+        }}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -47,13 +65,32 @@ const Pagination = () => {
         </svg>
       </span>
       <div className="pagination-container">
-        <div className="pagination-item is-current">1</div>
-        <div className="pagination-item">2</div>
-        <div className="pagination-item">...</div>
-        <div className="pagination-item">99</div>
-        <div className="pagination-item">100</div>
+        {/* is-current */}
+        {pageNumbers.map((page, index) => {
+          return (
+            <div
+              key={index}
+              className={`pagination-item ${
+                page == currentPage && "is-current"
+              }`}
+              onClick={() => {
+                setCurrentPage(page);
+              }}
+            >
+              {page}
+            </div>
+          );
+        })}
       </div>
-      <span className="next">
+      <span
+        className="next"
+        onClick={() => {
+          currentPage < totalPages &&
+            setCurrentPage((prev) => {
+              return prev + 1;
+            });
+        }}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

@@ -15,7 +15,8 @@ const getAllCategories = async (status = null, query_string = "") => {
       categoriesQuery = query(
         collection(db, "categories"),
         where("status", "==", status),
-        where("name", "==", query_string)
+        where("name", ">=", query_string),
+        where("name", "<=", query_string + "\uf8ff")
       );
     } else {
       categoriesQuery = query(
@@ -26,7 +27,8 @@ const getAllCategories = async (status = null, query_string = "") => {
   } else if (!!query_string) {
     categoriesQuery = query(
       collection(db, "categories"),
-      where("name", "==", query_string)
+      where("name", ">=", query_string),
+      where("name", "<=", query_string + "\uf8ff")
     );
   }
   const querySnap = await getDocs(categoriesQuery);

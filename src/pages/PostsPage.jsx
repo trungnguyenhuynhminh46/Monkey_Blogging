@@ -1,57 +1,27 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
 // Assets
-import { db } from "../firebase/firebase-config";
 import { getAllPosts } from "../services/posts";
 import { getAllCategories, getCategoryByID } from "../services/categories";
 import { getUserByID } from "../services/users";
-import { convertDateFormat } from "../utils/date";
 import { debounce } from "lodash";
 // Components
 import Heading from "../layouts/DashboardLayout/Heading";
-import Table from "../component/Table";
 import Pagination from "../component/Pagination";
-import Icons from "../component/Icons";
 import { Dropdown } from "../component/Dropdown";
 import Button from "../component/Button";
-import Swal from "sweetalert2";
-import Badge from "../component/Badge";
 import { useNavigate } from "react-router-dom";
+import Posts from "./modules/Dashboard/Posts";
 
-const StyledButton = styled.span`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  width: 40px;
-  height: 40px;
-
-  border-radius: 4px;
-  border: 1px solid rgb(229 231 235);
-  cursor: pointer;
-`;
-
+const POST_PER_PAGES = 2;
 const PostsPage = () => {
-  const navigate = useNavigate();
-  const status = {
-    1: "Approved",
-    2: "Pending",
-    3: "Rejected",
-  };
   // States
   const [searchInput, setSearchInput] = useState("");
   const [categoriesByUserID, setCategoriesByUserID] = useState({});
   const [authorsByUserID, setAuthorByUserID] = useState({});
   const [categories, setCategories] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   // Effect
   // Fetching Datas
   useEffect(() => {
@@ -75,11 +45,16 @@ const PostsPage = () => {
     };
     fetchCategories();
     fetchPosts();
+    setCurrentPage(1);
   }, [searchInput]);
   // Handlers, functions
   const handleInputSeach = debounce((e) => {
     setSearchInput(e.target.value);
   }, 600);
+  // Paginate
+  const indexOfLastPost = currentPage * POST_PER_PAGES - 1;
+  const indexOfFirstPost = indexOfLastPost - POST_PER_PAGES + 1;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost + 1);
   return (
     <div className="flex-1 mb-[40px]">
       <Heading>Manage Posts</Heading>
@@ -114,89 +89,21 @@ const PostsPage = () => {
           />
         </div>
       </div>
-
-      <Table>
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Post</th>
-            <th>Category</th>
-            <th>Author</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {!!posts &&
-            posts.map((post, index) => {
-              return (
-                <tr key={post.id}>
-                  <td>{post.id}</td>
-                  <td>
-                    <div className="flex gap-4">
-                      <img
-                        src={post.image}
-                        alt=""
-                        className="w-[80px] h-auto rounded object-cover"
-                      />
-                      <div className="flex flex-col gap-1">
-                        <h1 className="font-semibold">{post.title}</h1>
-                        <span>{convertDateFormat(post.createdAt.seconds)}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <span className="text-gray-500">
-                      {categoriesByUserID[post.id]?.name}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="text-gray-500">
-                      {authorsByUserID[post.id]?.displayName}
-                    </span>
-                  </td>
-                  <td>
-                    <Badge>{status[post.status]}</Badge>
-                  </td>
-                  <td>
-                    <div className="flex items-center gap-x-3 text-gray-500">
-                      <StyledButton>
-                        <Icons.IconEye iconClassName="w-5 h-5" />
-                      </StyledButton>
-                      <StyledButton
-                        onClick={() => {
-                          navigate(`/dashboard/update-post?id=${post.id}`);
-                        }}
-                      >
-                        <Icons.IconPencilSquare iconClassName="w-5 h-5" />
-                      </StyledButton>
-                      <StyledButton
-                        onClick={() => {
-                          Swal.fire({
-                            title: "Are you sure?",
-                            text: "You won't be able to revert this!",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#3085d6",
-                            cancelButtonColor: "#d33",
-                            confirmButtonText: "Yes, delete it!",
-                          }).then(async (result) => {
-                            if (result.isConfirmed) {
-                              await deleteDoc(doc(db, "posts", post.id));
-                              document.location.reload(true);
-                            }
-                          });
-                        }}
-                      >
-                        <Icons.IconTrashCan iconClassName="w-5 h-5" />
-                      </StyledButton>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </Table>
+      {Array.isArray(currentPosts) && currentPosts.length > 0 && (
+        <Posts
+          posts={currentPosts}
+          categoriesByUserID={categoriesByUserID}
+          authorsByUserID={authorsByUserID}
+        ></Posts>
+      )}
+      <div className="mt-10 flex justify-center">
+        <Pagination
+          itemsPerPage={POST_PER_PAGES}
+          totalItems={posts.length}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        ></Pagination>
+      </div>
     </div>
   );
 };

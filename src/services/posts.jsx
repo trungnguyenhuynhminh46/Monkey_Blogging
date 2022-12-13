@@ -16,13 +16,15 @@ const getAllPosts = async (status = null, query_string = "") => {
       postsQuery = query(
         collection(db, "posts"),
         where("status", "==", status),
-        where("title", "==", query_string)
+        where("title", ">=", query_string),
+        where("title", "<=", query_string + "\uf8ff")
       );
     }
   } else if (!!query_string) {
     postsQuery = query(
       collection(db, "posts"),
-      where("title", "==", query_string)
+      where("title", ">=", query_string),
+      where("title", "<=", query_string + "\uf8ff")
     );
   }
   let postsList = [];
