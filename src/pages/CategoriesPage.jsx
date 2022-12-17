@@ -60,14 +60,16 @@ const CategoriesPage = () => {
       {currentCategories.length > 0 && (
         <Categories categories={currentCategories} />
       )}
-      <div className="mt-10 flex justify-center">
-        <Pagination
-          itemsPerPage={CATEGORIES_PER_PAGE}
-          totalItems={categories.length}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        ></Pagination>
-      </div>
+      {categories.length > CATEGORIES_PER_PAGE && (
+        <div className="mt-10 flex justify-center">
+          <Pagination
+            itemsPerPage={CATEGORIES_PER_PAGE}
+            totalItems={categories.length}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          ></Pagination>
+        </div>
+      )}
     </div>
   );
 };

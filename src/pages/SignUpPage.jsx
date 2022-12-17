@@ -10,6 +10,7 @@ import { useNavigate, Link } from "react-router-dom";
 // Assets
 import { app, auth, db, storage } from "../firebase/firebase-config";
 import { doc, setDoc } from "firebase/firestore";
+import { userRole } from "../utils/constants";
 // Components
 import InputGroup from "../component/InputGroup";
 import Label from "../component/Label";
@@ -41,10 +42,7 @@ const StyledSignUpPage = styled.div`
 
 const schema = yup
   .object({
-    displayName: yup
-      .string()
-      .required("Please enter your display name")
-      .min(10, "Your display name must have at least 10 characters"),
+    displayName: yup.string().required("Please enter your display name"),
     email: yup
       .string()
       .required("Please enter your email")
@@ -52,10 +50,11 @@ const schema = yup
     password: yup
       .string()
       .required("Please enter your password")
-      .matches(
-        /^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
-        "Password must contain at least 8 characters, one uppercase, one number and one special case character"
-      ),
+      // .matches(
+      //   /^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
+      //   "Password must contain at least 8 characters, one uppercase, one number and one special case character"
+      // ),
+      .min(9, "Password must have at least 9 characters"),
   })
   .required();
 
@@ -107,6 +106,7 @@ const SignUpPage = () => {
           displayName,
           email,
           password,
+          role: userRole.USER,
         });
         setIsLoading(false);
         toast.success("Register successfully!!!", {

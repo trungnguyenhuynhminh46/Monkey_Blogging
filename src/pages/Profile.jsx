@@ -25,8 +25,21 @@ const Profile = () => {
 
   const schema = yup
     .object({
-      fullName: yup.string().required("Please enter your full name"),
       displayName: yup.string().required("Please enter your display name"),
+      email: yup
+        .string()
+        .required("Please enter your email")
+        .email("The email you enter in a wrong format!"),
+      password: yup
+        .string()
+        .test(
+          "len",
+          "Password must have at least 9 characters",
+          (val) => !val || val.length >= 9
+        ),
+      retyped_password: yup
+        .string()
+        .oneOf([yup.ref("password"), null], "Passwords must match"),
     })
     .required();
   const {
@@ -113,10 +126,8 @@ const Profile = () => {
     let [day, month, year] = data.dob.split("/");
     let date = new Date(year, month - 1, day);
     const dob = Timestamp.fromDate(date);
-    // Update Profile (Hoạt động chưa ổn lắm)
     try {
       const user = auth.currentUser;
-      // User re-authenticated.
       if (!!image) {
         updateProfile(user, {
           photoURL: image,
@@ -128,15 +139,25 @@ const Profile = () => {
         });
       }
       if (!!password && password === retyped_password) {
-        updatePassword(user, password);
+        updatePassword(user, password)
+          .then(() => {
+            updateDoc(doc(db, "users", auth.currentUser?.uid), {
+              password,
+            });
+          })
+          .catch((err) => {
+            alert(err);
+          });
       }
       if (!!email) {
         updateEmail(user, email)
           .then(() => {
-            // console.log("success");
+            updateDoc(doc(db, "users", auth.currentUser?.uid), {
+              email,
+            });
           })
           .catch((err) => {
-            console.log(err);
+            alert(err);
           });
       }
 
@@ -150,14 +171,14 @@ const Profile = () => {
         displayName,
         fullName,
         email,
-        image,
-        // password,
+        image: image || "",
         phone_num,
         dob,
       });
       // Document updated
     } catch (error) {
       // An error occured
+      alert(error);
     }
   };
   return (
@@ -169,14 +190,16 @@ const Profile = () => {
       <Heading>Profile</Heading>
       <InputGroup>
         <Label>Avatar</Label>
-        <ImageInput
-          name="image"
-          className="w-full max-w-[50%]"
-          onChange={handleSelectImage}
-          onDeleteImage={handleDeleteImage}
-          progress={currentProgress}
-          image={imageDownloadURL}
-        />
+        <div className="w-full flex justify-center">
+          <ImageInput
+            name="image"
+            className="h-[200px] w-[200px] rounded-[50%]"
+            onChange={handleSelectImage}
+            onDeleteImage={handleDeleteImage}
+            progress={currentProgress}
+            image={imageDownloadURL}
+          />
+        </div>
       </InputGroup>
       <div className="flex gap-10">
         <InputGroup>
@@ -219,6 +242,7 @@ const Profile = () => {
             defaultValue={user?.email}
             control={control}
           />
+          {errors.email?.message && <Error>{errors.email?.message}</Error>}
         </InputGroup>
         <InputGroup>
           <Label>Phone Number</Label>
@@ -227,7 +251,7 @@ const Profile = () => {
             name="phone_num"
             id="phone_num"
             placeholder="Enter your phone number"
-            defaultValue={user?.phone_num.toString()}
+            defaultValue={user?.phone_num?.toString()}
             control={control}
           />
         </InputGroup>
@@ -242,6 +266,9 @@ const Profile = () => {
             placeholder="Enter your password"
             control={control}
           />
+          {errors.password?.message && (
+            <Error>{errors.password?.message}</Error>
+          )}
         </InputGroup>
         <InputGroup>
           <Label>Confirm Password</Label>
@@ -252,6 +279,9 @@ const Profile = () => {
             placeholder="Confirm your password"
             control={control}
           />
+          {errors.retyped_password?.message && (
+            <Error>{errors.retyped_password?.message}</Error>
+          )}
         </InputGroup>
       </div>
       <div className="flex gap-10">

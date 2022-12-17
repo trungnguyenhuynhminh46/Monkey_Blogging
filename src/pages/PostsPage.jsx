@@ -96,14 +96,16 @@ const PostsPage = () => {
           authorsByUserID={authorsByUserID}
         ></Posts>
       )}
-      <div className="mt-10 flex justify-center">
-        <Pagination
-          itemsPerPage={POST_PER_PAGES}
-          totalItems={posts.length}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        ></Pagination>
-      </div>
+      {posts.length > POST_PER_PAGES && (
+        <div className="mt-10 flex justify-center">
+          <Pagination
+            itemsPerPage={POST_PER_PAGES}
+            totalItems={posts.length}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          ></Pagination>
+        </div>
+      )}
     </div>
   );
 };
