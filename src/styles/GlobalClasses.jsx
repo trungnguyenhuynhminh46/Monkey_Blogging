@@ -52,4 +52,35 @@ export const GlobalClasses = css`
     width: 1px;
     white-space: nowrap;
   }
+  /* Image gallery */
+  .gallery {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-auto-rows: 250px;
+    grid-auto-flow: dense;
+
+    padding: 10px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .gallery div img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .v-stretch {
+    grid-row: span 2;
+  }
+
+  .h-stretch {
+    grid-column: span 2;
+  }
+
+  .big-stretch {
+    grid-row: span 2;
+    grid-column: span 2;
+  }
 `;

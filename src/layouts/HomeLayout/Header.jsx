@@ -1,8 +1,11 @@
 import React from "react";
 // Assets
 import { useAuth } from "../../contexts/auth-context";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase/firebase-config";
 // Components
 import Button from "../../component/Button";
+import CompoundLink from "../../component/CompoundLink";
 
 const Header = () => {
   const { userInfo } = useAuth();
@@ -73,7 +76,17 @@ const Header = () => {
         ) : (
           <div className="welcome">
             <span>Welcome back, </span>
-            <span className="name">{getLastWord(userInfo?.displayName)}</span>
+            <CompoundLink to="/dashboard" className="name">
+              {getLastWord(userInfo?.displayName)}
+            </CompoundLink>
+            <button
+              onClick={() => {
+                signOut(auth);
+              }}
+              className="p-2 ml-4 rounded-md text-white bg-[#A4D96C]"
+            >
+              sign out
+            </button>
           </div>
         )}
       </div>
