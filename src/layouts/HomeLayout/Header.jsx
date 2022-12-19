@@ -3,6 +3,7 @@ import React from "react";
 import { useAuth } from "../../contexts/auth-context";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/firebase-config";
+import { Link } from "react-router-dom";
 // Components
 import Button from "../../component/Button";
 import CompoundLink from "../../component/CompoundLink";
@@ -18,7 +19,9 @@ const Header = () => {
   return (
     <div className="header">
       <div className="left">
-        <img srcSet="/logo.png 5x" alt="monkey image" className="logo" />
+        <Link to="/">
+          <img srcSet="/logo.png 5x" alt="monkey image" className="logo" />
+        </Link>
         <ul className="navigation">
           <li className="navigation_item">
             <a href="">Home</a>

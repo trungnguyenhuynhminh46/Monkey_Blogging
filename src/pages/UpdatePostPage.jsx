@@ -1,6 +1,6 @@
 // Thêm last_updated_by, last_updated_at
 // Libraries
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -25,6 +25,7 @@ import Button from "../component/Button";
 import Toggle from "../component/Toggle";
 import Radio from "../component/Radio";
 import Error from "../component/Error";
+import TextEditor from "../component/TextEditor";
 
 const UpdatePostPage = () => {
   const [params] = useSearchParams();
@@ -34,6 +35,7 @@ const UpdatePostPage = () => {
   const [category, setCategory] = useState(undefined);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [content, setContent] = useState("");
   const { userInfo } = useAuth();
   const schema = yup
     .object({
@@ -113,6 +115,7 @@ const UpdatePostPage = () => {
       defaultValues.image_name = post.image_name;
       // console.log(defaultValues);
       reset({ ...defaultValues });
+      setContent(post.content || "");
     }
   }, [post, category]);
   useEffect(() => {
@@ -157,6 +160,7 @@ const UpdatePostPage = () => {
       slug,
       status,
       title,
+      content,
     });
     // Reset loading
     setIsLoading(false);
@@ -165,6 +169,7 @@ const UpdatePostPage = () => {
       pauseOnHover: false,
     });
   };
+
   return (
     <form
       action="#"
@@ -175,111 +180,118 @@ const UpdatePostPage = () => {
         <>
           <Heading>Update post with id: {post_id}</Heading>
           <div className="flex gap-10">
-            <div className="flex-1 flex flex-col gap-y-10">
-              <InputGroup>
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  type="text"
-                  name="title"
-                  id="title"
-                  placeholder="Enter post's title"
-                  control={control}
-                />
-                {errors.title?.message && (
-                  <Error>{errors.title?.message}</Error>
-                )}
-              </InputGroup>
-              <InputGroup>
-                <Label>Image</Label>
-                <ImageInput
-                  name="image"
-                  onChange={handleSelectImage}
-                  onDeleteImage={handleDeleteImage}
-                  progress={currentProgress}
-                  image={imageDownloadURL}
-                />
-              </InputGroup>
-              <InputGroup>
-                <Label>Is Feature Post</Label>
-                <Toggle
-                  on={watchHot === true}
-                  onClick={() => {
-                    setValue("hot", !watchHot);
-                  }}
-                ></Toggle>
-              </InputGroup>
-            </div>
-            <div className="flex-1 flex flex-col gap-y-10">
-              <InputGroup>
-                <Label htmlFor="slug">Slug</Label>
-                <Input
-                  type="text"
-                  name="slug"
-                  id="slug"
-                  placeholder="Enter post's slug"
-                  control={control}
-                />
-                {errors.slug?.message && <Error>{errors.slug?.message}</Error>}
-              </InputGroup>
-              <InputGroup minHeight={"270px"}>
-                <Label>Category</Label>
-                <Dropdown>
-                  {categories &&
-                    categories.map((category) => {
-                      return (
-                        <Dropdown.Option
-                          key={category.id}
-                          onClick={() => {
-                            setValue("category", category);
-                          }}
-                        >
-                          {category.name}
-                        </Dropdown.Option>
-                      );
-                    })}
-                </Dropdown>
-                {watchCategory?.slug && (
-                  <div className="mt-6 w-max rounded px-2 py-3 bg-green-50 text-green-600">
-                    {watchCategory?.slug}
-                  </div>
-                )}
-                {errors.category?.message && (
-                  <Error>{errors.slug?.message}</Error>
-                )}
-              </InputGroup>
-              <InputGroup>
-                <Label>Status</Label>
-                <div className="flex items-center gap-x-5">
-                  <Radio
-                    name="status"
-                    control={control}
-                    checked={watchStatus === postStatus.APPROVED}
-                    onClick={() => setValue("status", postStatus.APPROVED)}
-                    value="approved"
-                  >
-                    Approved
-                  </Radio>
-                  <Radio
-                    name="status"
-                    control={control}
-                    checked={watchStatus === postStatus.PENDING}
-                    onClick={() => setValue("status", postStatus.PENDING)}
-                    value="pending"
-                  >
-                    Pending
-                  </Radio>
-                  <Radio
-                    name="status"
-                    control={control}
-                    checked={watchStatus === postStatus.REJECTED}
-                    onClick={() => setValue("status", postStatus.REJECTED)}
-                    value="reject"
-                  >
-                    Reject
-                  </Radio>
+            <InputGroup>
+              <Label htmlFor="title">Title</Label>
+              <Input
+                type="text"
+                name="title"
+                id="title"
+                placeholder="Enter post's title"
+                control={control}
+              />
+              {errors.title?.message && <Error>{errors.title?.message}</Error>}
+            </InputGroup>
+            <InputGroup>
+              <Label htmlFor="slug">Slug</Label>
+              <Input
+                type="text"
+                name="slug"
+                id="slug"
+                placeholder="Enter post's slug"
+                control={control}
+              />
+              {errors.slug?.message && <Error>{errors.slug?.message}</Error>}
+            </InputGroup>
+          </div>
+          <div className="flex gap-10">
+            <InputGroup>
+              <Label>Image</Label>
+              <ImageInput
+                name="image"
+                onChange={handleSelectImage}
+                onDeleteImage={handleDeleteImage}
+                progress={currentProgress}
+                image={imageDownloadURL}
+              />
+            </InputGroup>
+            <InputGroup minHeight={"270px"}>
+              <Label>Category</Label>
+              <Dropdown>
+                {categories &&
+                  categories.map((category) => {
+                    return (
+                      <Dropdown.Option
+                        key={category.id}
+                        onClick={() => {
+                          setValue("category", category);
+                        }}
+                      >
+                        {category.name}
+                      </Dropdown.Option>
+                    );
+                  })}
+              </Dropdown>
+              {watchCategory?.slug && (
+                <div className="mt-6 w-max rounded px-2 py-3 bg-green-50 text-green-600">
+                  {watchCategory?.slug}
                 </div>
-              </InputGroup>
-            </div>
+              )}
+              {errors.category?.message && (
+                <Error>{errors.slug?.message}</Error>
+              )}
+            </InputGroup>
+          </div>
+          <div className="flex gap-10">
+            <InputGroup>
+              <Label>Is Feature Post</Label>
+              <Toggle
+                on={watchHot === true}
+                onClick={() => {
+                  setValue("hot", !watchHot);
+                }}
+              ></Toggle>
+            </InputGroup>
+            <InputGroup>
+              <Label>Status</Label>
+              <div className="flex items-center gap-x-5">
+                <Radio
+                  name="status"
+                  control={control}
+                  checked={watchStatus === postStatus.APPROVED}
+                  onClick={() => setValue("status", postStatus.APPROVED)}
+                  value="approved"
+                >
+                  Approved
+                </Radio>
+                <Radio
+                  name="status"
+                  control={control}
+                  checked={watchStatus === postStatus.PENDING}
+                  onClick={() => setValue("status", postStatus.PENDING)}
+                  value="pending"
+                >
+                  Pending
+                </Radio>
+                <Radio
+                  name="status"
+                  control={control}
+                  checked={watchStatus === postStatus.REJECTED}
+                  onClick={() => setValue("status", postStatus.REJECTED)}
+                  value="reject"
+                >
+                  Reject
+                </Radio>
+              </div>
+            </InputGroup>
+          </div>
+          <div className="flex gap-10">
+            <InputGroup>
+              <Label>Content</Label>
+              <TextEditor
+                content={content}
+                setContent={setContent}
+              ></TextEditor>
+            </InputGroup>
           </div>
           <div className="flex justify-center mt-10">
             <Button type="submit" style={{ width: 300 }} isLoading={isLoading}>

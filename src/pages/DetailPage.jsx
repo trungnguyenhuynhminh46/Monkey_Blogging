@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useParams } from "react-router-dom";
+import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
+// Assets
+import { db } from "../firebase/firebase-config";
+import { convertDateFormat } from "../utils/date";
+import parse from "html-react-parser";
 // Components
 import HomeLayout from "../layouts/HomeLayout";
 import Badge from "../component/Badge";
 import InfoDetail from "../component/InfoDetail";
 import { RandomPosts } from "./modules/Home";
 import SectionHeader from "../component/SectionHeader";
+import NotFoundPage from "./NotFoundPage";
 
 const StyledDetailPage = styled.div`
   .post-info {
@@ -52,43 +59,6 @@ const StyledDetailPage = styled.div`
       gap: 10px;
     }
   }
-  .post-content {
-    width: 100%;
-    max-width: 860px;
-    margin: 40px auto;
-  }
-  .post-content__title {
-    margin-bottom: 20px;
-
-    font-style: normal;
-    font-weight: 600;
-    font-size: 22px;
-    line-height: 28px;
-  }
-  .post-content__section {
-    font-style: normal;
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 32px;
-    letter-spacing: 0.005em;
-  }
-  .post-content__img {
-    width: 100%;
-    border-radius: 20px;
-  }
-  .post-content__img-name {
-    width: 100%;
-    max-width: 600px;
-    margin: 20px auto;
-    text-align: center;
-
-    font-style: normal;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-
-    color: #6b6b6b;
-  }
 
   .author {
     width: 100%;
@@ -101,7 +71,7 @@ const StyledDetailPage = styled.div`
       flex-shrink: 0;
       width: 240px;
       height: 240px;
-      border-radius: 20px;
+      border-radius: 50%;
       object-fit: cover;
     }
     &-info {
@@ -125,24 +95,67 @@ const StyledDetailPage = styled.div`
 `;
 
 const DetailPage = () => {
+  // Variables, states
+  const { slug } = useParams();
+  const [post, setPost] = useState({});
+  const [author, setAuthor] = useState({});
+  const [category, setCategory] = useState({});
+  // Effects
+  useEffect(() => {
+    const q = query(collection(db, "posts"), where("slug", "==", slug));
+    const unsub = onSnapshot(q, (querySnapshot) => {
+      const posts = [];
+      querySnapshot.forEach((doc) => {
+        posts.push({ id: doc.id, ...doc.data() });
+      });
+      setPost(posts[0]);
+    });
+
+    return () => {
+      unsub();
+    };
+  }, [slug]);
+  useEffect(() => {
+    if (post?.id) {
+      const unsub_author = onSnapshot(
+        doc(db, "users", post?.user_id),
+        (doc) => {
+          setAuthor({ id: doc.id, ...doc.data() });
+        }
+      );
+      const unsub_category = onSnapshot(
+        doc(db, "categories", post?.category_id),
+        (doc) => {
+          setCategory({ id: doc.id, ...doc.data() });
+        }
+      );
+      return () => {
+        unsub_author();
+        unsub_category();
+      };
+    }
+  }, [post]);
+  if (!post?.id) return <NotFoundPage />;
+  // console.log(post?.content);
   return (
     <HomeLayout>
       <StyledDetailPage>
         <div className="post-info">
-          <img
-            src="https://images.unsplash.com/photo-1664574654578-d5a6a4f447bb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
-            alt=""
-            className="post-info__img"
-          />
+          <img src={post?.image} alt="" className="post-info__img" />
           <div className="post-info__content">
-            <Badge to="/category/kien-thuc" bg="#F3EDFF">
-              Kiến thức
+            <Badge to={`/category/${category?.slug}`} bg="#F3EDFF">
+              {category?.name}
             </Badge>
-            <p className="post-info__title">
-              Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
-            </p>
+            <p className="post-info__title">{post?.title}</p>
             <div className="post-info__meta">
-              <InfoDetail color="#6B6B6B" style={{ width: 160 }}></InfoDetail>
+              <InfoDetail
+                color="#6B6B6B"
+                date={
+                  post?.createdAt?.seconds &&
+                  convertDateFormat(post?.createdAt?.seconds)
+                }
+                name={author?.fullName}
+              />
               <div className="view">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -163,137 +176,20 @@ const DetailPage = () => {
                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                <span className="num">123</span>
+                <span className="num">5</span>
               </div>
             </div>
           </div>
         </div>
-        <div className="post-content">
-          <h1 className="post-content__title">Chương 1</h1>
-          <p className="post-content__section">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates
-            facilis nulla ullam ab ipsa fuga, harum tempore magnam iste illum
-            labore quae nisi quas quibusdam quam sapiente deserunt eius suscipit
-            provident animi! Ex harum excepturi sapiente natus, illum beatae
-            perspiciatis fugiat quis quisquam tempora impedit, dicta nisi
-            dolorum eveniet. Enim, labore ut maiores in rem tempore a.
-            Inventore, nisi? Facilis perferendis quae possimus corrupti sapiente
-            nihil nobis, atque ducimus. Illum quibusdam maiores deserunt vero
-            ratione quos animi esse! Cupiditate, eveniet officia quod ea
-            repellat iusto facere in ad, esse eos ducimus possimus nisi nihil
-            animi! Quae maiores impedit mollitia officiis excepturi possimus
-            veritatis, dolores tempore! Voluptatibus repellendus maxime minus
-            excepturi earum! Necessitatibus ab rerum consectetur eveniet
-            possimus atque laborum praesentium similique? Minus vel odit tempore
-            voluptatem neque debitis ducimus ipsa quia excepturi porro. Aliquam
-            natus pariatur architecto sed accusamus facilis dolorum accusantium,
-            explicabo consequuntur doloribus tenetur at quod reprehenderit
-            recusandae, quisquam asperiores id quam, voluptatem animi ullam sit
-            exercitationem! Molestiae cumque excepturi ipsam quae nesciunt,
-            saepe facere, consequatur suscipit aperiam dolores nisi magni,
-            asperiores non! Fuga aliquam at fugit inventore. Aspernatur tenetur
-            perferendis doloremque molestias dolore error tempore temporibus
-            tempora, enim eaque, ullam at rerum eum repellat blanditiis
-            officiis. Voluptatem!
-          </p>
-          <br />
-          <p className="post-content__section">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates
-            facilis nulla ullam ab ipsa fuga, harum tempore magnam iste illum
-            labore quae nisi quas quibusdam quam sapiente deserunt eius suscipit
-            provident animi! Ex harum excepturi sapiente natus, illum beatae
-            perspiciatis fugiat quis quisquam tempora impedit, dicta nisi
-            dolorum eveniet. Enim, labore ut maiores in rem tempore a.
-            Inventore, nisi? Facilis perferendis quae possimus corrupti sapiente
-            nihil nobis, atque ducimus. Illum quibusdam maiores deserunt vero
-            ratione quos animi esse! Cupiditate, eveniet officia quod ea
-            repellat iusto facere in ad, esse eos ducimus possimus nisi nihil
-            animi! Quae maiores impedit mollitia officiis excepturi possimus
-            veritatis, dolores tempore! Voluptatibus repellendus maxime minus
-            excepturi earum! Necessitatibus ab rerum consectetur eveniet
-            possimus atque laborum praesentium similique? Minus vel odit tempore
-            voluptatem neque debitis ducimus ipsa quia excepturi porro. Aliquam
-            natus pariatur architecto sed accusamus facilis dolorum accusantium,
-            explicabo consequuntur doloribus tenetur at quod reprehenderit
-            recusandae, quisquam asperiores id quam, voluptatem animi ullam sit
-            exercitationem! Molestiae cumque excepturi ipsam quae nesciunt,
-            saepe facere, consequatur suscipit aperiam dolores nisi magni,
-            asperiores non! Fuga aliquam at fugit inventore. Aspernatur tenetur
-            perferendis doloremque molestias dolore error tempore temporibus
-            tempora, enim eaque, ullam at rerum eum repellat blanditiis
-            officiis. Voluptatem!
-          </p>
-          <br />
-          <p className="post-content__section">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates
-            facilis nulla ullam ab ipsa fuga, harum tempore magnam iste illum
-            labore quae nisi quas quibusdam quam sapiente deserunt eius suscipit
-            provident animi! Ex harum excepturi sapiente natus, illum beatae
-            perspiciatis fugiat quis quisquam tempora impedit, dicta nisi
-            dolorum eveniet. Enim, labore ut maiores in rem tempore a.
-            Inventore, nisi? Facilis perferendis quae possimus corrupti sapiente
-            nihil nobis, atque ducimus. Illum quibusdam maiores deserunt vero
-            ratione quos animi esse! Cupiditate, eveniet officia quod ea
-            repellat iusto facere in ad, esse eos ducimus possimus nisi nihil
-            animi! Quae maiores impedit mollitia officiis excepturi possimus
-            veritatis, dolores tempore! Voluptatibus repellendus maxime minus
-            excepturi earum! Necessitatibus ab rerum consectetur eveniet
-            possimus atque laborum praesentium similique? Minus vel odit tempore
-            voluptatem neque debitis ducimus ipsa quia excepturi porro. Aliquam
-            natus pariatur architecto sed accusamus facilis dolorum accusantium,
-            explicabo consequuntur doloribus tenetur at quod reprehenderit
-            recusandae, quisquam asperiores id quam, voluptatem animi ullam sit
-            exercitationem! Molestiae cumque excepturi ipsam quae nesciunt,
-            saepe facere, consequatur suscipit aperiam dolores nisi magni,
-            asperiores non! Fuga aliquam at fugit inventore. Aspernatur tenetur
-            perferendis doloremque molestias dolore error tempore temporibus
-            tempora, enim eaque, ullam at rerum eum repellat blanditiis
-            officiis. Voluptatem!
-          </p>
-          <br />
-          <img
-            src="https://images.unsplash.com/photo-1664574654578-d5a6a4f447bb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
-            alt=""
-            className="post-content__img"
-          />
-          <div className="post-content__img-name">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Cupiditate
-            cum ullam asperiores quod, libero veniam sapiente odit
-          </div>
-          <h1 className="post-content__title">Chương 2</h1>
-          <p className="post-content__section">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates
-            facilis nulla ullam ab ipsa fuga, harum tempore magnam iste illum
-            labore quae nisi quas quibusdam quam sapiente deserunt eius suscipit
-            provident animi! Ex harum excepturi sapiente natus, illum beatae
-            perspiciatis fugiat quis quisquam tempora impedit, dicta nisi
-            dolorum eveniet. Enim, labore ut maiores in rem tempore a.
-            Inventore, nisi? Facilis perferendis quae possimus corrupti sapiente
-            nihil nobis, atque ducimus. Illum quibusdam maiores deserunt vero
-            ratione quos animi esse! Cupiditate, eveniet officia quod ea
-            repellat iusto facere in ad, esse eos ducimus possimus nisi nihil
-            animi! Quae maiores impedit mollitia officiis excepturi possimus
-            veritatis, dolores tempore! Voluptatibus repellendus maxime minus
-            excepturi earum! Necessitatibus ab rerum consectetur eveniet
-            possimus atque laborum praesentium similique? Minus vel odit tempore
-            voluptatem neque debitis ducimus ipsa quia excepturi porro. Aliquam
-            natus pariatur architecto sed accusamus facilis dolorum accusantium,
-            explicabo consequuntur doloribus tenetur at quod reprehenderit
-            recusandae, quisquam asperiores id quam, voluptatem animi ullam sit
-            exercitationem! Molestiae cumque excepturi ipsam quae nesciunt,
-            saepe facere, consequatur suscipit aperiam dolores nisi magni,
-            asperiores non! Fuga aliquam at fugit inventore. Aspernatur tenetur
-            perferendis doloremque molestias dolore error tempore temporibus
-            tempora, enim eaque, ullam at rerum eum repellat blanditiis
-            officiis. Voluptatem!
-          </p>
-          <div className="author">
-            <img
-              src="https://images.unsplash.com/photo-1643754017436-88660f040275?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"
-              alt=""
-            />
+        <div className="spacer py-[20px]"></div>
+        <div className="entry-content">
+          {post?.content && parse(post?.content)}
+        </div>
+        <div className="author">
+          <img src={author?.image} alt="" />
+          {author?.id && (
             <div className="author-info">
-              <h1>Jake Sullian</h1>
+              <h1>{author.fullName}</h1>
               <p>
                 Lorem ipsum dolor, sit amet consectetur adipisicing elit.
                 Praesentium enim, nemo repellendus quam molestias ad eveniet
@@ -301,7 +197,7 @@ const DetailPage = () => {
                 voluptates dolore vero. Optio, incidunt.
               </p>
             </div>
-          </div>
+          )}
         </div>
         <SectionHeader color="#23BB86">Bài viết liên quan</SectionHeader>
         <RandomPosts></RandomPosts>

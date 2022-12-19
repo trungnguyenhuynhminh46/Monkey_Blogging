@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 const StyledInfoDetail = styled.div`
+  flex-shrink: 0;
   display: flex;
   justify-content: space-around;
   align-items: center;

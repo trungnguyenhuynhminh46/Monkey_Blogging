@@ -84,7 +84,7 @@ const FeaturedPostItem = ({ data }) => {
           ></InfoDetail>
         </div>
         <CompoundLink
-          to={`/to/${data?.slug}`}
+          to={`/post/${data?.slug}`}
           style={{ fontSize: "22px", lineHeight: "28px" }}
         >
           {data.title}

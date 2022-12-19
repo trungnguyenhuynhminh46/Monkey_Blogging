@@ -60,7 +60,9 @@ const Sidebar = () => {
   return (
     <div className="w-full max-w-[300px] rounded-xl overflow-hidden shadow-lg">
       <div className="p-7 flex items-center gap-x-7">
-        <img srcSet="/logo.png" alt="" className="w-10 h-auto" />
+        <Link to="/">
+          <img srcSet="/logo.png" alt="" className="w-10 h-auto" />
+        </Link>
         <span className="font-semibold">Monkey Blogging</span>
       </div>
       {dashboardSidebarData &&
