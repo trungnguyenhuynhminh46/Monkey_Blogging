@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+// Assets
+import {
+  collection,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../../../firebase/firebase-config";
+import { postStatus } from "../../../utils/constants";
 // Components
 import SectionHeader from "../../../component/SectionHeader";
 import PostItem from "../../../component/PostItem";
 import NewestPostItem from "../../../component/NewestPostItem";
+import { useEffect } from "react";
 
 const StyledNewestUpdate = styled.div`
   margin-bottom: 52px;
@@ -22,21 +35,44 @@ const StyledNewestUpdate = styled.div`
 `;
 
 const NewestUpdate = () => {
-  const newestPosts = [1, 2, 3];
+  // States
+  const [newestPosts, setNewestPosts] = useState([]);
+  // Effect
+  useEffect(() => {
+    (async () => {
+      const postsQuery = query(
+        collection(db, "posts"),
+        orderBy("createdAt", "desc"),
+        where("status", "==", postStatus.APPROVED),
+        where("hot", "==", false),
+        limit(4)
+      );
+      const querySnap = await getDocs(postsQuery);
+      let posts = [];
+      querySnap.forEach((doc) => {
+        posts.push({ id: doc.id, ...doc.data() });
+      });
+      setNewestPosts(posts);
+    })();
+  }, []);
+  // Split to first post and other posts
+  const [firstPost, ...otherPosts] = newestPosts;
   return (
     <StyledNewestUpdate>
       <SectionHeader>Newest update</SectionHeader>
       <div className="layout">
-        <PostItem></PostItem>
+        {!!firstPost?.id && <PostItem data={firstPost}></PostItem>}
+
         <div className="right">
           <div className="newest-list">
-            {newestPosts.map((item, index) => {
-              return (
-                <div key={index} className="newest-item">
-                  <NewestPostItem data={item}></NewestPostItem>
-                </div>
-              );
-            })}
+            {otherPosts?.length > 0 &&
+              otherPosts.map((post) => {
+                return (
+                  <div key={post.id} className="newest-item">
+                    <NewestPostItem data={post}></NewestPostItem>
+                  </div>
+                );
+              })}
           </div>
         </div>
       </div>

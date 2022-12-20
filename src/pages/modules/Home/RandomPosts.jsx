@@ -1,17 +1,32 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+// Assets
+import { getAllPosts } from "../../../services/posts";
 // Components
 import PostItem from "../../../component/PostItem";
+import SectionHeader from "../../../component/SectionHeader";
 
 const RandomPosts = () => {
-  const randomPosts = [1, 2, 3, 4];
+  // States
+  const [randomPosts, setRandomPosts] = useState([]);
+  // Effect
+  useEffect(() => {
+    (async () => {
+      const posts = await getAllPosts(1);
+      const shuffled = posts.sort(() => 0.5 - Math.random());
+      setRandomPosts(shuffled.slice(0, 8));
+    })();
+  }, []);
   return (
-    <div className="grid-layout grid-layout--secondary">
-      {randomPosts.map((item, index) => {
-        return (
-          <PostItem key={index} data={item} image_height="200px"></PostItem>
-        );
-      })}
-    </div>
+    <>
+      <SectionHeader>See other posts</SectionHeader>
+      <div className="grid-layout grid-layout--secondary">
+        {randomPosts.map((post) => {
+          return (
+            <PostItem key={post.id} data={post} image_height="200px"></PostItem>
+          );
+        })}
+      </div>
+    </>
   );
 };
 

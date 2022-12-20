@@ -60,7 +60,11 @@ const Categories = ({ categories = [] }) => {
                 </td>
                 <td>
                   <div className="flex items-center gap-x-3 text-gray-500">
-                    <StyledButton>
+                    <StyledButton
+                      onClick={() => {
+                        navigate(`/category/${category.slug}`);
+                      }}
+                    >
                       <Icons.IconEye iconClassName="w-5 h-5" />
                     </StyledButton>
                     <StyledButton

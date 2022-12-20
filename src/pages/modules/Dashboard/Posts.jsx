@@ -79,7 +79,11 @@ const Posts = ({ posts = [], categoriesByUserID, authorsByUserID }) => {
                 </td>
                 <td>
                   <div className="flex items-center gap-x-3 text-gray-500">
-                    <StyledButton>
+                    <StyledButton
+                      onClick={() => {
+                        navigate(`/post/${post.slug}`);
+                      }}
+                    >
                       <Icons.IconEye iconClassName="w-5 h-5" />
                     </StyledButton>
                     <StyledButton

@@ -1,5 +1,9 @@
-import React from "react";
+import { doc, getDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+// Assets
+import { db } from "../firebase/firebase-config";
+import { convertDateFormat } from "../utils/date";
 // Components
 import Badge from "./Badge";
 import CompoundLink from "./CompoundLink";
@@ -23,25 +27,44 @@ const StyledNewestPostItem = styled.div`
   }
 `;
 
-const NewestPostItem = () => {
+const NewestPostItem = ({ data }) => {
+  // State
+  const [category, setCategory] = useState({});
+  const [author, setAuthor] = useState({});
+  // Effect
+  useEffect(() => {
+    const fetchData = async () => {
+      // Get category
+      const categoryRef = doc(db, "categories", data.category_id);
+      const categorySnap = await getDoc(categoryRef);
+      setCategory(categorySnap.data());
+
+      // Get author
+      const authorRef = doc(db, "users", data.user_id);
+      const authorSnap = await getDoc(authorRef);
+      setAuthor(authorSnap.data());
+    };
+    fetchData();
+  }, []);
   return (
     <StyledNewestPostItem>
-      <img
-        src="https://images.unsplash.com/photo-1668015918583-e0dee8585f4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80"
-        alt=""
-        className="image"
-      />
+      <img src={data?.image} alt="" className="image" />
       <div className="content">
-        <Badge to="/category/kien-thuc" bg="white">
-          Kiến thức
+        <Badge to={`/category/${category?.slug}`} bg="white">
+          {category?.name}
         </Badge>
         <CompoundLink
-          to="/post/huong-dan-setup-phong-cuc-chill-cho-nguoi-moi-toan-tap"
+          to={`/post/${data?.slug}`}
           style={{ fontSize: "18px", lineHeight: "24px", padding: "12px 0" }}
         >
-          Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
+          {data?.title}
         </CompoundLink>
-        <InfoDetail color="#6B6B6B" style={{ width: 160 }}></InfoDetail>
+        <InfoDetail
+          color="#6B6B6B"
+          style={{ width: 200 }}
+          date={convertDateFormat(data?.createdAt.seconds)}
+          name={author?.displayName?.split(" ").at(-1)}
+        ></InfoDetail>
       </div>
     </StyledNewestPostItem>
   );

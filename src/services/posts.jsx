@@ -5,6 +5,7 @@ import {
   getDocs,
   query,
   where,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "../firebase/firebase-config";
 
@@ -13,17 +14,19 @@ const getAllPosts = async (
   query_string = "",
   user_id = null
 ) => {
-  let postsQuery = query(collection(db, "posts"));
+  let postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   if (!!user_id) {
     postsQuery = query(
       collection(db, "posts"),
-      where("user_id", "==", user_id)
+      where("user_id", "==", user_id),
+      orderBy("createdAt", "desc")
     );
   } else {
     if (status !== null) {
       postsQuery = query(
         collection(db, "posts"),
-        where("status", "==", status)
+        where("status", "==", status),
+        orderBy("createdAt", "desc")
       );
       if (!!query_string) {
         postsQuery = query(
