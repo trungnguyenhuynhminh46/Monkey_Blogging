@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 // Assets
 import { db } from "../firebase/firebase-config";
 import { convertDateFormat } from "../utils/date";
 import parse from "html-react-parser";
+import { postStatus } from "../utils/constants";
 // Components
 import HomeLayout from "../layouts/HomeLayout";
 import Badge from "../component/Badge";
@@ -102,7 +110,7 @@ const DetailPage = () => {
   const [post, setPost] = useState({});
   const [author, setAuthor] = useState({});
   const [category, setCategory] = useState({});
-  // const [relatedPosts, setRelatedPost] = useState([]);
+  const [relatedPosts, setRelatedPost] = useState([]);
   // Effects
   useEffect(() => {
     setLoading(true);
@@ -144,6 +152,24 @@ const DetailPage = () => {
       };
     }
   }, [post]);
+  useEffect(() => {
+    if (category?.id) {
+      (async () => {
+        const queryRelatedPosts = query(
+          collection(db, "posts"),
+          where("status", "==", postStatus.APPROVED),
+          where("category_id", "==", category.id),
+          where("post_uid", "!=", post.post_uid)
+        );
+        const querySnap = await getDocs(queryRelatedPosts);
+        let posts = [];
+        querySnap.forEach((doc) => {
+          posts.push({ id: doc.id, ...doc.data() });
+        });
+        setRelatedPost(posts);
+      })();
+    }
+  }, [category]);
   return loading ? (
     <div className="h-screen w-screen flex justify-center items-center">
       <ClimbingBoxLoader color="#36d7b7" loading={loading} size={20} />
@@ -210,8 +236,12 @@ const DetailPage = () => {
             </div>
           )}
         </div>
-        <SectionHeader color="#23BB86">Related Posts</SectionHeader>
-        {/* <ListOfPosts></ListOfPosts> */}
+        {relatedPosts.length > 0 && (
+          <>
+            <SectionHeader color="#23BB86">Related Posts</SectionHeader>
+            <ListOfPosts posts={relatedPosts}></ListOfPosts>
+          </>
+        )}
       </StyledDetailPage>
     </HomeLayout>
   ) : (

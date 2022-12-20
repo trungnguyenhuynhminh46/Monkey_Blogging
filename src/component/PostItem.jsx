@@ -56,7 +56,7 @@ const PostItem = ({ image_height = "436px", data }) => {
       </CompoundLink>
       <InfoDetail
         color="#6B6B6B"
-        style={{ width: 160 }}
+        style={{ width: 200 }}
         date={convertDateFormat(data?.createdAt.seconds)}
         name={author?.displayName?.split(" ").at(-1)}
       ></InfoDetail>
