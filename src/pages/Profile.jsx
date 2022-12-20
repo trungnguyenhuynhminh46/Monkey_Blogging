@@ -8,6 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 // Assets
 import { useAuth } from "../contexts/auth-context";
+import { toast } from "react-toastify";
 // Components
 import Heading from "../layouts/DashboardLayout/Heading";
 import InputGroup from "../component/InputGroup";
@@ -176,6 +177,10 @@ const Profile = () => {
         dob,
       });
       // Document updated
+      toast.success("Update profile successfully!!!", {
+        autoClose: 5000,
+        pauseOnHover: false,
+      });
     } catch (error) {
       // An error occured
       alert(error);

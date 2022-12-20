@@ -26,11 +26,13 @@ import Toggle from "../component/Toggle";
 import Radio from "../component/Radio";
 import Error from "../component/Error";
 import TextEditor from "../component/TextEditor";
+import BeatLoader from "react-spinners/BeatLoader";
 
 const UpdatePostPage = () => {
   const [params] = useSearchParams();
   const post_id = params.get("id");
   // States, variables
+  const [postIsLoading, setPostIsLoading] = useState(true);
   const [post, setPost] = useState(undefined);
   const [category, setCategory] = useState(undefined);
   const [categories, setCategories] = useState([]);
@@ -89,6 +91,12 @@ const UpdatePostPage = () => {
     post_id
   );
   // Effect
+  useEffect(() => {
+    setPostIsLoading(true);
+    setTimeout(() => {
+      setPostIsLoading(false);
+    }, 1000);
+  }, []);
   useEffect(() => {
     (async () => {
       const post = await getPostByID(post_id);
@@ -171,140 +179,158 @@ const UpdatePostPage = () => {
   };
 
   return (
-    <form
-      action="#"
-      className="flex-1 mb-[40px]"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      {post ? (
-        <>
-          <Heading>Update post with id: {post_id}</Heading>
-          <div className="flex gap-10">
-            <InputGroup>
-              <Label htmlFor="title">Title</Label>
-              <Input
-                type="text"
-                name="title"
-                id="title"
-                placeholder="Enter post's title"
-                control={control}
-              />
-              {errors.title?.message && <Error>{errors.title?.message}</Error>}
-            </InputGroup>
-            <InputGroup>
-              <Label htmlFor="slug">Slug</Label>
-              <Input
-                type="text"
-                name="slug"
-                id="slug"
-                placeholder="Enter post's slug"
-                control={control}
-              />
-              {errors.slug?.message && <Error>{errors.slug?.message}</Error>}
-            </InputGroup>
-          </div>
-          <div className="flex gap-10">
-            <InputGroup>
-              <Label>Image</Label>
-              <ImageInput
-                name="image"
-                onChange={handleSelectImage}
-                onDeleteImage={handleDeleteImage}
-                progress={currentProgress}
-                image={imageDownloadURL}
-              />
-            </InputGroup>
-            <InputGroup minHeight={"270px"}>
-              <Label>Category</Label>
-              <Dropdown>
-                {categories &&
-                  categories.map((category) => {
-                    return (
-                      <Dropdown.Option
-                        key={category.id}
-                        onClick={() => {
-                          setValue("category", category);
-                        }}
-                      >
-                        {category.name}
-                      </Dropdown.Option>
-                    );
-                  })}
-              </Dropdown>
-              {watchCategory?.slug && (
-                <div className="mt-6 w-max rounded px-2 py-3 bg-green-50 text-green-600">
-                  {watchCategory?.slug}
-                </div>
-              )}
-              {errors.category?.message && (
-                <Error>{errors.slug?.message}</Error>
-              )}
-            </InputGroup>
-          </div>
-          <div className="flex gap-10">
-            <InputGroup>
-              <Label>Is Feature Post</Label>
-              <Toggle
-                on={watchHot === true}
-                onClick={() => {
-                  setValue("hot", !watchHot);
-                }}
-              ></Toggle>
-            </InputGroup>
-            <InputGroup>
-              <Label>Status</Label>
-              <div className="flex items-center gap-x-5">
-                <Radio
-                  name="status"
-                  control={control}
-                  checked={watchStatus === postStatus.APPROVED}
-                  onClick={() => setValue("status", postStatus.APPROVED)}
-                  value="approved"
-                >
-                  Approved
-                </Radio>
-                <Radio
-                  name="status"
-                  control={control}
-                  checked={watchStatus === postStatus.PENDING}
-                  onClick={() => setValue("status", postStatus.PENDING)}
-                  value="pending"
-                >
-                  Pending
-                </Radio>
-                <Radio
-                  name="status"
-                  control={control}
-                  checked={watchStatus === postStatus.REJECTED}
-                  onClick={() => setValue("status", postStatus.REJECTED)}
-                  value="reject"
-                >
-                  Reject
-                </Radio>
-              </div>
-            </InputGroup>
-          </div>
-          <div className="flex gap-10">
-            <InputGroup>
-              <Label>Content</Label>
-              <TextEditor
-                content={content}
-                setContent={setContent}
-              ></TextEditor>
-            </InputGroup>
-          </div>
-          <div className="flex justify-center mt-10">
-            <Button type="submit" style={{ width: 300 }} isLoading={isLoading}>
-              Update post
-            </Button>
-          </div>
-        </>
-      ) : (
-        <div>
-          <Heading>Sorry but the post with ID {post_id} does not exist</Heading>
+    <>
+      {postIsLoading ? (
+        <div className="w-full h-[540px] flex justify-center items-center">
+          <BeatLoader color="#36d7b7" loading={postIsLoading} size={14} />
         </div>
+      ) : (
+        <form
+          action="#"
+          className="flex-1 mb-[40px]"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          {post ? (
+            <>
+              <Heading>Update post with id: {post_id}</Heading>
+              <div className="flex gap-10">
+                <InputGroup>
+                  <Label htmlFor="title">Title</Label>
+                  <Input
+                    type="text"
+                    name="title"
+                    id="title"
+                    placeholder="Enter post's title"
+                    control={control}
+                  />
+                  {errors.title?.message && (
+                    <Error>{errors.title?.message}</Error>
+                  )}
+                </InputGroup>
+                <InputGroup>
+                  <Label htmlFor="slug">Slug</Label>
+                  <Input
+                    type="text"
+                    name="slug"
+                    id="slug"
+                    placeholder="Enter post's slug"
+                    control={control}
+                  />
+                  {errors.slug?.message && (
+                    <Error>{errors.slug?.message}</Error>
+                  )}
+                </InputGroup>
+              </div>
+              <div className="flex gap-10">
+                <InputGroup>
+                  <Label>Image</Label>
+                  <ImageInput
+                    name="image"
+                    onChange={handleSelectImage}
+                    onDeleteImage={handleDeleteImage}
+                    progress={currentProgress}
+                    image={imageDownloadURL}
+                  />
+                </InputGroup>
+                <InputGroup minHeight={"270px"}>
+                  <Label>Category</Label>
+                  <Dropdown>
+                    {categories &&
+                      categories.map((category) => {
+                        return (
+                          <Dropdown.Option
+                            key={category.id}
+                            onClick={() => {
+                              setValue("category", category);
+                            }}
+                          >
+                            {category.name}
+                          </Dropdown.Option>
+                        );
+                      })}
+                  </Dropdown>
+                  {watchCategory?.slug && (
+                    <div className="mt-6 w-max rounded px-2 py-3 bg-green-50 text-green-600">
+                      {watchCategory?.slug}
+                    </div>
+                  )}
+                  {errors.category?.message && (
+                    <Error>{errors.slug?.message}</Error>
+                  )}
+                </InputGroup>
+              </div>
+              <div className="flex gap-10">
+                <InputGroup>
+                  <Label>Is Feature Post</Label>
+                  <Toggle
+                    on={watchHot === true}
+                    onClick={() => {
+                      setValue("hot", !watchHot);
+                    }}
+                  ></Toggle>
+                </InputGroup>
+                <InputGroup>
+                  <Label>Status</Label>
+                  <div className="flex items-center gap-x-5">
+                    <Radio
+                      name="status"
+                      control={control}
+                      checked={watchStatus === postStatus.APPROVED}
+                      onClick={() => setValue("status", postStatus.APPROVED)}
+                      value="approved"
+                    >
+                      Approved
+                    </Radio>
+                    <Radio
+                      name="status"
+                      control={control}
+                      checked={watchStatus === postStatus.PENDING}
+                      onClick={() => setValue("status", postStatus.PENDING)}
+                      value="pending"
+                    >
+                      Pending
+                    </Radio>
+                    <Radio
+                      name="status"
+                      control={control}
+                      checked={watchStatus === postStatus.REJECTED}
+                      onClick={() => setValue("status", postStatus.REJECTED)}
+                      value="reject"
+                    >
+                      Reject
+                    </Radio>
+                  </div>
+                </InputGroup>
+              </div>
+              <div className="flex gap-10">
+                <InputGroup>
+                  <Label>Content</Label>
+                  <TextEditor
+                    content={content}
+                    setContent={setContent}
+                  ></TextEditor>
+                </InputGroup>
+              </div>
+              <div className="flex justify-center mt-10">
+                <Button
+                  type="submit"
+                  style={{ width: 300 }}
+                  isLoading={isLoading}
+                >
+                  Update post
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div>
+              <Heading>
+                Sorry but the post with ID {post_id} does not exist
+              </Heading>
+            </div>
+          )}
+        </form>
       )}
-    </form>
+    </>
   );
 };
 

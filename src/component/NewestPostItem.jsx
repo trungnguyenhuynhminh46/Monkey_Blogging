@@ -48,7 +48,9 @@ const NewestPostItem = ({ data }) => {
   }, []);
   return (
     <StyledNewestPostItem>
-      <img src={data?.image} alt="" className="image" />
+      <CompoundLink to={`/post/${data?.slug}`}>
+        <img src={data?.image} alt="" className="image" />
+      </CompoundLink>
       <div className="content">
         <Badge to={`/category/${category?.slug}`} bg="white">
           {category?.name}

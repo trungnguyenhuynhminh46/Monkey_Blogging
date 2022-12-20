@@ -24,18 +24,18 @@ const Header = () => {
         </Link>
         <ul className="navigation">
           <li className="navigation_item">
-            <a href="">Home</a>
+            <Link to="/">Home</Link>
           </li>
           <li className="navigation_item">
-            <a href="">Blog</a>
+            <Link to="/blog">Blog</Link>
           </li>
           <li className="navigation_item">
-            <a href="">Contact</a>
+            <Link to="/contact">Contact</Link>
           </li>
         </ul>
       </div>
       <div className="right">
-        <form action="#" className="search">
+        {/* <form action="#" className="search">
           <input
             type="text"
             placeholder="Search posts..."
@@ -71,7 +71,7 @@ const Header = () => {
               />
             </svg>
           </button>
-        </form>
+        </form> */}
         {!userInfo ? (
           <Button to="/sign-in" style={{ width: 190, margin: 0 }}>
             Sign in

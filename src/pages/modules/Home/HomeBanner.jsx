@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 // Components
 import Button from "../../../component/Button";
+import { Link } from "react-router-dom";
 
 const StyledHomeBanner = styled.div`
   .banner {
@@ -48,9 +49,11 @@ const HomeBanner = () => {
             illo architecto neque accusantium beatae soluta quis provident sint
             odit voluptas in?
           </p>
-          <Button style={{ maxWidth: 230 }} bg_white>
-            Get Stated
-          </Button>
+          <Link to="/dashboard">
+            <Button style={{ maxWidth: 230 }} bg_white>
+              Go to dashboard
+            </Button>
+          </Link>
         </div>
         <img src="/img-banner.png" alt="" />
       </div>

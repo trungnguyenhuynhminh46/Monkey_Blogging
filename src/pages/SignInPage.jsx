@@ -93,6 +93,7 @@ const SignInPage = () => {
   const onSubmit = async (data) => {
     try {
       setIsLoading(true);
+      setErr("");
       // Variables
       const email = data.email;
       const password = data.password;
@@ -104,6 +105,7 @@ const SignInPage = () => {
       });
     } catch (err) {
       setErr("Something went wrong please try again!");
+      setIsLoading(false);
     }
   };
   return (

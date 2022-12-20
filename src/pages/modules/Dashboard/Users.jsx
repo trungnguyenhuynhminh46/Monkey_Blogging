@@ -54,7 +54,11 @@ const Users = ({ users }) => {
         {users.map((user) => {
           return (
             <tr key={user.id}>
-              <td>{user.displayName}</td>
+              <td>
+                {user.displayName.lenght > 25
+                  ? user.displayName.slice(0, 25) + "..."
+                  : user.displayName}
+              </td>
               <td>
                 <div className="flex gap-4 items-center">
                   <img
@@ -63,9 +67,15 @@ const Users = ({ users }) => {
                     className="w-[80px] h-auto rounded object-cover"
                   />
                   <div className="flex flex-col gap-1">
-                    <h1 className="font-semibold">{user.fullName}</h1>
+                    {!!user?.fullName && (
+                      <h1 className="font-semibold">
+                        {user.fullName.length > 15
+                          ? user.fullName.slice(0, 15) + "..."
+                          : user.fullName}
+                      </h1>
+                    )}
                     <span>
-                      {user.dob && convertDateFormat(user.dob.seconds)}
+                      {!!user.dob && convertDateFormat(user.dob.seconds)}
                     </span>
                   </div>
                 </div>

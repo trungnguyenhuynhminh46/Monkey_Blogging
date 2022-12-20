@@ -5,6 +5,7 @@ import { deleteDoc, doc } from "firebase/firestore";
 // Assets
 import { convertDateFormat } from "../../../utils/date";
 import { db } from "../../../firebase/firebase-config";
+import { userRole } from "../../../utils/constants";
 // Components
 import Table from "../../../component/Table";
 import Badge from "../../../component/Badge";
@@ -30,8 +31,17 @@ const StyledButton = styled.span`
   cursor: pointer;
 `;
 
-const Posts = ({ posts = [], categoriesByUserID, authorsByUserID }) => {
+const Posts = ({
+  currentUser,
+  posts = [],
+  categoriesByUserID,
+  authorsByUserID,
+}) => {
   const navigate = useNavigate();
+  // posts.forEach((post) => {
+  //   console.log("post", post.id);
+  //   console.log("author", authorsByUserID[post.id]);
+  // });
   return (
     <Table>
       <thead>
@@ -47,7 +57,7 @@ const Posts = ({ posts = [], categoriesByUserID, authorsByUserID }) => {
       <tbody>
         {Array.isArray(posts) &&
           posts.length > 0 &&
-          posts.map((post, index) => {
+          posts.map((post) => {
             return (
               <tr key={post.id}>
                 <td>{post.id}</td>
@@ -59,7 +69,9 @@ const Posts = ({ posts = [], categoriesByUserID, authorsByUserID }) => {
                       className="w-[80px] h-auto rounded object-cover"
                     />
                     <div className="flex flex-col gap-1">
-                      <h1 className="font-semibold">{post.title}</h1>
+                      <h1 className="font-semibold">
+                        {post?.title.slice(0, 25) + "..."}
+                      </h1>
                       <span>{convertDateFormat(post.createdAt.seconds)}</span>
                     </div>
                   </div>
@@ -78,42 +90,46 @@ const Posts = ({ posts = [], categoriesByUserID, authorsByUserID }) => {
                   <Badge>{status[post.status]}</Badge>
                 </td>
                 <td>
-                  <div className="flex items-center gap-x-3 text-gray-500">
-                    <StyledButton
-                      onClick={() => {
-                        navigate(`/post/${post.slug}`);
-                      }}
-                    >
-                      <Icons.IconEye iconClassName="w-5 h-5" />
-                    </StyledButton>
-                    <StyledButton
-                      onClick={() => {
-                        navigate(`/dashboard/update-post?id=${post.id}`);
-                      }}
-                    >
-                      <Icons.IconPencilSquare iconClassName="w-5 h-5" />
-                    </StyledButton>
-                    <StyledButton
-                      onClick={() => {
-                        Swal.fire({
-                          title: "Are you sure?",
-                          text: "You won't be able to revert this!",
-                          icon: "warning",
-                          showCancelButton: true,
-                          confirmButtonColor: "#3085d6",
-                          cancelButtonColor: "#d33",
-                          confirmButtonText: "Yes, delete it!",
-                        }).then(async (result) => {
-                          if (result.isConfirmed) {
-                            await deleteDoc(doc(db, "posts", post.id));
-                            document.location.reload(true);
-                          }
-                        });
-                      }}
-                    >
-                      <Icons.IconTrashCan iconClassName="w-5 h-5" />
-                    </StyledButton>
-                  </div>
+                  {(currentUser.role == userRole.ADMIN ||
+                    (authorsByUserID[post.id] &&
+                      currentUser.id == authorsByUserID[post.id].id)) && (
+                    <div className="flex items-center gap-x-3 text-gray-500">
+                      <StyledButton
+                        onClick={() => {
+                          navigate(`/post/${post.slug}`);
+                        }}
+                      >
+                        <Icons.IconEye iconClassName="w-5 h-5" />
+                      </StyledButton>
+                      <StyledButton
+                        onClick={() => {
+                          navigate(`/dashboard/update-post?id=${post.id}`);
+                        }}
+                      >
+                        <Icons.IconPencilSquare iconClassName="w-5 h-5" />
+                      </StyledButton>
+                      <StyledButton
+                        onClick={() => {
+                          Swal.fire({
+                            title: "Are you sure?",
+                            text: "You won't be able to revert this!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Yes, delete it!",
+                          }).then(async (result) => {
+                            if (result.isConfirmed) {
+                              await deleteDoc(doc(db, "posts", post.id));
+                              document.location.reload(true);
+                            }
+                          });
+                        }}
+                      >
+                        <Icons.IconTrashCan iconClassName="w-5 h-5" />
+                      </StyledButton>
+                    </div>
+                  )}
                 </td>
               </tr>
             );

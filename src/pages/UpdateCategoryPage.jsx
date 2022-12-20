@@ -19,12 +19,14 @@ import Heading from "../layouts/DashboardLayout/Heading";
 import Radio from "../component/Radio";
 import Button from "../component/Button";
 import Error from "../component/Error";
+import BeatLoader from "react-spinners/BeatLoader";
 
 const UpdateCategoryPage = () => {
   const [params] = useSearchParams();
   const cat_id = params.get("id");
   // States
-  const [category, setCategory] = useState({});
+  const [categoryIsLoading, setCategoryIsLoading] = useState(true);
+  const [category, setCategory] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const schema = yup
     .object({
@@ -52,6 +54,12 @@ const UpdateCategoryPage = () => {
   const watchName = watch("name");
   const watchStatus = watch("status");
   // Effect
+  useEffect(() => {
+    setCategoryIsLoading(true);
+    setTimeout(() => {
+      setCategoryIsLoading(false);
+    }, 1000);
+  }, []);
   useEffect(() => {
     (async () => {
       const cat = await getCategoryByID(cat_id);
@@ -95,67 +103,95 @@ const UpdateCategoryPage = () => {
     });
   };
   return (
-    <form
-      action="#"
-      className="flex-1 mb-[40px]"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <Heading>Add new category</Heading>
-      <div className="flex gap-10">
-        <InputGroup>
-          <Label htmlFor="name">Category's name</Label>
-          <Input
-            type="text"
-            name="name"
-            id="name"
-            placeholder="Enter category's name"
-            control={control}
-          />
-          {errors.name?.message && <Error>{errors.name?.message}</Error>}
-        </InputGroup>
-        <InputGroup>
-          <Label htmlFor="slug">Category's slug</Label>
-          <Input
-            type="text"
-            name="slug"
-            id="slug"
-            placeholder="Enter category's slug"
-            control={control}
-          />
-          {errors.slug?.message && <Error>{errors.slug?.message}</Error>}
-        </InputGroup>
-      </div>
-      <div className="flex gap-10">
-        <InputGroup>
-          <Label>Status</Label>
-          <div className="flex items-center gap-x-5">
-            <Radio
-              name="status"
-              control={control}
-              checked={watchStatus === categoryStatus.APPROVED}
-              onClick={() => setValue("status", categoryStatus.APPROVED)}
-              value="approved"
-            >
-              Approved
-            </Radio>
-            <Radio
-              name="status"
-              control={control}
-              checked={watchStatus === categoryStatus.UNAPPROVED}
-              onClick={() => setValue("status", categoryStatus.UNAPPROVED)}
-              value="unapproved"
-            >
-              Unapproved
-            </Radio>
-          </div>
-        </InputGroup>
-      </div>
-      <div className="flex justify-center mt-10">
-        <Button type="submit" style={{ width: 300 }} isLoading={isLoading}>
-          Update category
-        </Button>
-      </div>
-    </form>
+    <>
+      {categoryIsLoading ? (
+        <div className="w-full h-[540px] flex justify-center items-center">
+          <BeatLoader color="#36d7b7" loading={categoryIsLoading} size={14} />
+        </div>
+      ) : (
+        <form
+          action="#"
+          className="flex-1 mb-[40px]"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          {category ? (
+            <>
+              <Heading>Add new category</Heading>
+              <div className="flex gap-10">
+                <InputGroup>
+                  <Label htmlFor="name">Category's name</Label>
+                  <Input
+                    type="text"
+                    name="name"
+                    id="name"
+                    placeholder="Enter category's name"
+                    control={control}
+                  />
+                  {errors.name?.message && (
+                    <Error>{errors.name?.message}</Error>
+                  )}
+                </InputGroup>
+                <InputGroup>
+                  <Label htmlFor="slug">Category's slug</Label>
+                  <Input
+                    type="text"
+                    name="slug"
+                    id="slug"
+                    placeholder="Enter category's slug"
+                    control={control}
+                  />
+                  {errors.slug?.message && (
+                    <Error>{errors.slug?.message}</Error>
+                  )}
+                </InputGroup>
+              </div>
+              <div className="flex gap-10">
+                <InputGroup>
+                  <Label>Status</Label>
+                  <div className="flex items-center gap-x-5">
+                    <Radio
+                      name="status"
+                      control={control}
+                      checked={watchStatus === categoryStatus.APPROVED}
+                      onClick={() =>
+                        setValue("status", categoryStatus.APPROVED)
+                      }
+                      value="approved"
+                    >
+                      Approved
+                    </Radio>
+                    <Radio
+                      name="status"
+                      control={control}
+                      checked={watchStatus === categoryStatus.UNAPPROVED}
+                      onClick={() =>
+                        setValue("status", categoryStatus.UNAPPROVED)
+                      }
+                      value="unapproved"
+                    >
+                      Unapproved
+                    </Radio>
+                  </div>
+                </InputGroup>
+              </div>
+              <div className="flex justify-center mt-10">
+                <Button
+                  type="submit"
+                  style={{ width: 300 }}
+                  isLoading={isLoading}
+                >
+                  Update category
+                </Button>
+              </div>
+            </>
+          ) : (
+            <Heading>
+              Sorry but the category with ID {cat_id} does not exist
+            </Heading>
+          )}
+        </form>
+      )}
+    </>
   );
 };
 

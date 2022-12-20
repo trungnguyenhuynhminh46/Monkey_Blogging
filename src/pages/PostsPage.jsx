@@ -5,17 +5,22 @@ import { getAllPosts } from "../services/posts";
 import { getAllCategories, getCategoryByID } from "../services/categories";
 import { getUserByID } from "../services/users";
 import { debounce } from "lodash";
+import { useAuth } from "../contexts/auth-context";
+import { db } from "../firebase/firebase-config";
+import { doc, getDoc } from "firebase/firestore";
 // Components
 import Heading from "../layouts/DashboardLayout/Heading";
 import Pagination from "../component/Pagination";
 import { Dropdown } from "../component/Dropdown";
 import Button from "../component/Button";
-import { useNavigate } from "react-router-dom";
 import Posts from "./modules/Dashboard/Posts";
 
 const POST_PER_PAGES = 2;
 const PostsPage = () => {
+  const { userInfo } = useAuth();
+  // console.log(userInfo);
   // States
+  const [user, setUser] = useState(undefined);
   const [searchInput, setSearchInput] = useState("");
   const [categoriesByUserID, setCategoriesByUserID] = useState({});
   const [authorsByUserID, setAuthorByUserID] = useState({});
@@ -24,6 +29,15 @@ const PostsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   // Effect
   // Fetching Datas
+  useEffect(() => {
+    if (userInfo?.uid) {
+      (async () => {
+        const uid = userInfo.uid;
+        const docSnap = await getDoc(doc(db, "users", uid));
+        setUser({ id: docSnap.id, ...docSnap.data() });
+      })();
+    }
+  }, [userInfo]);
   useEffect(() => {
     const fetchCategories = async () => {
       let catsList = await getAllCategories(1);
@@ -89,8 +103,9 @@ const PostsPage = () => {
           />
         </div>
       </div>
-      {Array.isArray(currentPosts) && currentPosts.length > 0 && (
+      {!!user?.id && Array.isArray(currentPosts) && currentPosts.length > 0 && (
         <Posts
+          currentUser={user}
           posts={currentPosts}
           categoriesByUserID={categoriesByUserID}
           authorsByUserID={authorsByUserID}

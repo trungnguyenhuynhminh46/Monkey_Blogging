@@ -41,7 +41,9 @@ const PostItem = ({ image_height = "436px", data }) => {
   }, []);
   return (
     <StyledPostitem image_height={image_height}>
-      <img src={data?.image} alt="" className="image" />
+      <CompoundLink to={`/post/${data?.slug}`}>
+        <img src={data?.image} alt="" className="image" />
+      </CompoundLink>
       <Badge to={`/category/${category?.slug}`}>{category?.name}</Badge>
       <CompoundLink
         to={`/post/${data?.slug}`}

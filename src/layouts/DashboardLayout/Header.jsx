@@ -57,6 +57,7 @@ const Header = () => {
             src={user?.image || "/image-placeholder.png"}
             alt=""
             className="w-14 h-14 rounded-full"
+            title={user?.displayName}
           />
         </CompoundLink>
       </div>
