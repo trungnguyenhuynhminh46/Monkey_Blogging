@@ -10,9 +10,10 @@ import parse from "html-react-parser";
 import HomeLayout from "../layouts/HomeLayout";
 import Badge from "../component/Badge";
 import InfoDetail from "../component/InfoDetail";
-import { RandomPosts } from "./modules/Home";
+import { ListOfPosts } from "./modules/Home";
 import SectionHeader from "../component/SectionHeader";
 import NotFoundPage from "./NotFoundPage";
+import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
 
 const StyledDetailPage = styled.div`
   .post-info {
@@ -97,10 +98,18 @@ const StyledDetailPage = styled.div`
 const DetailPage = () => {
   // Variables, states
   const { slug } = useParams();
+  const [loading, setLoading] = useState(true);
   const [post, setPost] = useState({});
   const [author, setAuthor] = useState({});
   const [category, setCategory] = useState({});
+  // const [relatedPosts, setRelatedPost] = useState([]);
   // Effects
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
   useEffect(() => {
     const q = query(collection(db, "posts"), where("slug", "==", slug));
     const unsub = onSnapshot(q, (querySnapshot) => {
@@ -110,7 +119,7 @@ const DetailPage = () => {
       });
       setPost(posts[0]);
     });
-
+    // Clean up
     return () => {
       unsub();
     };
@@ -135,9 +144,11 @@ const DetailPage = () => {
       };
     }
   }, [post]);
-  if (!post?.id) return <NotFoundPage />;
-  // console.log(post?.content);
-  return (
+  return loading ? (
+    <div className="h-screen w-screen flex justify-center items-center">
+      <ClimbingBoxLoader color="#36d7b7" loading={loading} size={20} />
+    </div>
+  ) : !!post?.id ? (
     <HomeLayout>
       <StyledDetailPage>
         <div className="post-info">
@@ -199,10 +210,12 @@ const DetailPage = () => {
             </div>
           )}
         </div>
-        <SectionHeader color="#23BB86">Bài viết liên quan</SectionHeader>
-        <RandomPosts></RandomPosts>
+        <SectionHeader color="#23BB86">Related Posts</SectionHeader>
+        {/* <ListOfPosts></ListOfPosts> */}
       </StyledDetailPage>
     </HomeLayout>
+  ) : (
+    <NotFoundPage />
   );
 };
 
