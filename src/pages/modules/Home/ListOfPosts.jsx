@@ -1,9 +1,6 @@
-import React, { useState, useEffect } from "react";
-// Assets
-import { getAllPosts } from "../../../services/posts";
+import React from "react";
 // Components
 import PostItem from "../../../component/PostItem";
-import SectionHeader from "../../../component/SectionHeader";
 
 const ListOfPosts = ({ posts }) => {
   return (

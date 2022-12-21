@@ -1,6 +1,6 @@
 // Library
-import { Routes, Route, Link, Navigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // Assets
 import { useAuth } from "./contexts/auth-context";
@@ -21,6 +21,7 @@ import Profile from "./pages/Profile";
 import UpdateCategoryPage from "./pages/UpdateCategoryPage";
 import UpdatePostPage from "./pages/UpdatePostPage";
 import UsersPage from "./pages/UsersPage";
+import PostsByCategory from "./pages/PostsByCategory";
 
 function ProtectedComponent({ children }) {
   const { userInfo } = useAuth();
@@ -38,6 +39,7 @@ function App() {
         <Route path="/sign-up" element={<SignUpPage />}></Route>
         <Route path="/sign-in" element={<SignInPage />}></Route>
         <Route path="/post/:slug" element={<DetailPage />}></Route>
+        <Route path="/category/:slug" element={<PostsByCategory />}></Route>
         <Route
           path="/dashboard"
           element={

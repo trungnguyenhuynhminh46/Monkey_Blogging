@@ -1,26 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import slugify from "slugify";
 import { toast } from "react-toastify";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-
 // Assets
 import { postStatus } from "../utils/constants";
 import { db } from "../firebase/firebase-config";
 import { uid } from "uid";
 import { useAuth } from "../contexts/auth-context";
 import { getAllCategories } from "../services/categories";
-
 // Components
 import InputGroup from "../component/InputGroup";
 import Label from "../component/Label";
@@ -95,9 +86,6 @@ const AddPostPage = () => {
   useEffect(() => {
     setValue("slug", slugify(watchTitle, { lower: true }));
   }, [watchTitle]);
-  // useEffect(() => {
-  //   console.log(errors);
-  // }, [errors]);
   // Handlers
   const onSubmit = async (data) => {
     setIsLoading(true);

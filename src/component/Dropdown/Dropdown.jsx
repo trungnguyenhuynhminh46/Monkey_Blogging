@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { DropdownProvider } from "./dropdown-context";
 import useClickOutSide from "../../hooks/useClickOutSide";
 

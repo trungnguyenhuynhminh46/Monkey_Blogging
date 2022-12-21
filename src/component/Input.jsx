@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useEffect } from "react";
 import { useController } from "react-hook-form";
 import styled from "styled-components";
 // Components

@@ -7,11 +7,11 @@ import { deleteUser, signOut } from "firebase/auth";
 import { convertDateFormat } from "../../../utils/date";
 import { useNavigate } from "react-router-dom";
 import { getAllPosts } from "../../../services/posts";
+import { db, auth } from "../../../firebase/firebase-config";
 // Components
 import Table from "../../../component/Table";
 import Icons from "../../../component/Icons";
 import Swal from "sweetalert2";
-import { db, auth } from "../../../firebase/firebase-config";
 
 const StyledButton = styled.span`
   display: flex;
@@ -103,7 +103,7 @@ const Users = ({ users }) => {
                           cancelButtonColor: "#d33",
                           confirmButtonText: "Yes, delete it!",
                         }).then(async (result) => {
-                          if (result.isConfirmed) {
+                          if (result.isConfirmed && auth.currentUser) {
                             const allPostsByThisUser = await getAllPosts(
                               null,
                               "",

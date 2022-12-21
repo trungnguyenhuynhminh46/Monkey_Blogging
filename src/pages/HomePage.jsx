@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 // Assets
 import { getAllPosts } from "../services/posts";
 // Components

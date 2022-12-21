@@ -1,10 +1,9 @@
 import React from "react";
 import { useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/auth-context";
 import { auth, db } from "../../firebase/firebase-config";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 // Components
 import Button from "../../component/Button";
 import CompoundLink from "../../component/CompoundLink";

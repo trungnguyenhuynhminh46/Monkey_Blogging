@@ -1,7 +1,6 @@
 // Library
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { useAuth } from "../contexts/auth-context";
 import slugify from "slugify";
 import { useForm } from "react-hook-form";
 import { addDoc, collection } from "firebase/firestore";
@@ -11,7 +10,6 @@ import * as yup from "yup";
 // Assets
 import { categoryStatus } from "../utils/constants";
 import { db } from "../firebase/firebase-config";
-
 // Components
 import InputGroup from "../component/InputGroup";
 import Label from "../component/Label";

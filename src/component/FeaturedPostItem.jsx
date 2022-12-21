@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import styled from "styled-components";
-import { collection, doc, getDoc, query } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase-config";
-import { format } from "date-fns";
 // Assets
 import { convertDateFormat } from "../utils/date";
 // Components
@@ -51,7 +50,6 @@ const StyledFeaturedPostItem = styled.div`
 `;
 
 const FeaturedPostItem = ({ data }) => {
-  // console.log(data);
   // State
   const [category, setCategory] = useState({});
   const [author, setAuthor] = useState({});

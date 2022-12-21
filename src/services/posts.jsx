@@ -18,8 +18,7 @@ const getAllPosts = async (
   if (!!user_id) {
     postsQuery = query(
       collection(db, "posts"),
-      where("user_id", "==", user_id),
-      orderBy("createdAt", "desc")
+      where("user_id", "==", user_id)
     );
   } else {
     if (status !== null) {

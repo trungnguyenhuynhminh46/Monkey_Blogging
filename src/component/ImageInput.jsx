@@ -1,4 +1,3 @@
-import { updateProfile } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase-config";
 import {
@@ -19,7 +18,6 @@ const useImageInput = (
   name = "",
   post_id
 ) => {
-  // console.log(user_uid);
   // States
   const [currentProgress, setCurrentProgress] = useState(0);
   const [imageDownloadURL, setImageDownloadURL] = useState(defaultImage);
@@ -66,9 +64,6 @@ const useImageInput = (
     } finally {
       setValue("image", "");
       if (user_uid) {
-        // await updateProfile(user, {
-        //   photoURL: "",
-        // });
         await updateDoc(doc(db, "users", user_uid), {
           image: "",
         });
