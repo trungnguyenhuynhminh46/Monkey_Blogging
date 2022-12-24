@@ -47,6 +47,13 @@ const StyledFeaturedPostItem = styled.div`
     justify-content: space-between;
     margin-bottom: 16px;
   }
+  @media screen and (max-width: 1023.98px) {
+    .post__info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
 `;
 
 const FeaturedPostItem = ({ data }) => {

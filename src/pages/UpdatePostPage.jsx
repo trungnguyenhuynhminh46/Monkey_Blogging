@@ -192,7 +192,7 @@ const UpdatePostPage = () => {
           {post ? (
             <>
               <Heading>Update post with id: {post_id}</Heading>
-              <div className="flex gap-10">
+              <div className="flex flex-col sm:flex-row sm:gap-10">
                 <InputGroup>
                   <Label htmlFor="title">Title</Label>
                   <Input
@@ -220,7 +220,7 @@ const UpdatePostPage = () => {
                   )}
                 </InputGroup>
               </div>
-              <div className="flex gap-10">
+              <div className="flex flex-col sm:flex-row sm:gap-10">
                 <InputGroup>
                   <Label>Image</Label>
                   <ImageInput
@@ -258,7 +258,7 @@ const UpdatePostPage = () => {
                   )}
                 </InputGroup>
               </div>
-              <div className="flex gap-10">
+              <div className="flex flex-col sm:flex-row sm:gap-10">
                 <InputGroup>
                   <Label>Is Feature Post</Label>
                   <Toggle
@@ -301,7 +301,7 @@ const UpdatePostPage = () => {
                   </div>
                 </InputGroup>
               </div>
-              <div className="flex gap-10">
+              <div className="flex flex-col sm:flex-row sm:gap-10">
                 <InputGroup>
                   <Label>Content</Label>
                   <TextEditor

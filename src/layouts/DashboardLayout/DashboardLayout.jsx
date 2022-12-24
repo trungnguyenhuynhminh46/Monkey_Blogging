@@ -10,7 +10,7 @@ const DashboardLayout = () => {
     <div>
       <Header></Header>
       <div className="py-10 px-5 flex gap-x-10">
-        <div>
+        <div className="hidden xl:block">
           <Sidebar></Sidebar>
         </div>
         <Outlet></Outlet>

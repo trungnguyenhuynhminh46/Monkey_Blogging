@@ -206,7 +206,7 @@ const Profile = () => {
           />
         </div>
       </InputGroup>
-      <div className="flex gap-10">
+      <div className="flex flex-col sm:flex-row sm:gap-10">
         <InputGroup>
           <Label>Full Name</Label>
           <Input
@@ -236,7 +236,7 @@ const Profile = () => {
           )}
         </InputGroup>
       </div>
-      <div className="flex gap-10">
+      <div className="flex flex-col sm:flex-row sm:gap-10">
         <InputGroup>
           <Label>Email</Label>
           <Input
@@ -261,7 +261,7 @@ const Profile = () => {
           />
         </InputGroup>
       </div>
-      <div className="flex gap-10">
+      <div className="flex flex-col sm:flex-row sm:gap-10">
         <InputGroup>
           <Label>Password</Label>
           <Input
@@ -289,7 +289,7 @@ const Profile = () => {
           )}
         </InputGroup>
       </div>
-      <div className="flex gap-10">
+      <div className="flex flex-col sm:flex-row sm:gap-10">
         <div className="w-1/2 pr-5">
           <InputGroup>
             <Label>Date of birth</Label>

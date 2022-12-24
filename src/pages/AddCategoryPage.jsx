@@ -84,7 +84,7 @@ const AddCategoryPage = () => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <Heading>Add new category</Heading>
-      <div className="flex gap-10">
+      <div className="flex flex-col sm:flex-row sm:gap-10">
         <InputGroup>
           <Label htmlFor="name">Category's name</Label>
           <Input

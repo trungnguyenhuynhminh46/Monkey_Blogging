@@ -35,9 +35,9 @@ const Categories = ({ categories = [] }) => {
       <thead>
         <tr>
           <th>Id</th>
-          <th>Name</th>
-          <th>Slug</th>
-          <th>Status</th>
+          <th className="hidden sm:table-cell">Name</th>
+          <th className="hidden lg:table-cell">Slug</th>
+          <th className="hidden lg:table-cell">Status</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -46,14 +46,14 @@ const Categories = ({ categories = [] }) => {
           categories.map((category) => {
             return (
               <tr key={category.id}>
-                <td>{category.id}</td>
-                <td>
+                <td>{category.id && category.id?.slice(0, 10) + "..."}</td>
+                <td className="hidden sm:table-cell">
                   <span className="text-gray-500">{category.name}</span>
                 </td>
-                <td>
+                <td className="hidden lg:table-cell">
                   <span className="text-gray-500">{category.slug}</span>
                 </td>
-                <td>
+                <td className="hidden lg:table-cell">
                   <span className="text-gray-500">
                     <Badge>{status[category.status]}</Badge>
                   </span>

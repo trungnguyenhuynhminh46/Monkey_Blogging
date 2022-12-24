@@ -47,10 +47,10 @@ const Posts = ({
       <thead>
         <tr>
           <th>Id</th>
-          <th>Post</th>
-          <th>Category</th>
-          <th>Author</th>
-          <th>Status</th>
+          <th className="hidden lg:table-cell">Post</th>
+          <th className="hidden md:table-cell">Category</th>
+          <th className="hidden 2xl:table-cell">Author</th>
+          <th className="hidden 2xl:table-cell">Status</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -61,7 +61,7 @@ const Posts = ({
             return (
               <tr key={post.id}>
                 <td>{post.id}</td>
-                <td>
+                <td className="hidden md:table-cell">
                   <div className="flex gap-4">
                     <img
                       src={post.image}
@@ -76,17 +76,17 @@ const Posts = ({
                     </div>
                   </div>
                 </td>
-                <td>
+                <td className="hidden lg:table-cell">
                   <span className="text-gray-500">
                     {categoriesByUserID[post.id]?.name}
                   </span>
                 </td>
-                <td>
+                <td className="hidden 2xl:table-cell">
                   <span className="text-gray-500">
                     {authorsByUserID[post.id]?.displayName}
                   </span>
                 </td>
-                <td>
+                <td className="hidden 2xl:table-cell">
                   <Badge>{status[post.status]}</Badge>
                 </td>
                 <td>

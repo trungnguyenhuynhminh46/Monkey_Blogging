@@ -1,5 +1,5 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState } from "react";
+import styled, { css } from "styled-components";
 // Components
 import Header from "./Header";
 
@@ -8,18 +8,76 @@ const StyledHomeLayout = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 56px 0;
+    padding: 20px 0;
   }
   .left {
     display: flex;
     align-items: center;
   }
+  .toggle-btn {
+    cursor: pointer;
+    padding: 12px;
+    display: none;
+  }
+  /* .toggle-menu {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+
+    display: flex;
+    padding: 20px 16px;
+    width: 300px;
+    flex-direction: column;
+    background: white;
+
+    transform: translateX(-200%);
+    transition: all 0.5s linear;
+    ${(props) =>
+    props.show === true &&
+    css`
+      transform: translateX(0);
+    `}
+  }
+  .toggle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    span {
+      font-weight: 600;
+    }
+    .back {
+      display: inline-block;
+      padding: 12px;
+      cursor: pointer;
+    }
+  }
+  .responsive-item {
+    a {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      line-height: 1.5em;
+      padding: 1em 2em;
+      font-weight: 600;
+      color: rgb(128, 129, 145);
+      margin-bottom: 20px;
+      cursor: pointer;
+      &:hover {
+        background: rgb(241, 251, 247);
+        color: rgb(29, 192, 113);
+      }
+    }
+  } */
   .navigation {
     display: flex;
   }
   .navigation_item {
-    padding: 12px 24px;
     a {
+      display: inline-block;
+      padding: 12px 24px;
       font-style: normal;
       font-weight: 600;
       font-size: 18px;
@@ -65,6 +123,20 @@ const StyledHomeLayout = styled.div`
     .name {
       font-weight: 700;
       color: ${(props) => props.theme.primary};
+    }
+  }
+
+  @media screen and (max-width: 950px) {
+    .toggle-btn {
+      display: inline-block;
+    }
+    .left {
+      display: none;
+    }
+  }
+  @media screen and (max-width: 415px) {
+    .welcome {
+      display: none;
     }
   }
 `;

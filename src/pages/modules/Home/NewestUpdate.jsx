@@ -32,6 +32,20 @@ const StyledNewestUpdate = styled.div`
       border-bottom: transparent;
     }
   }
+
+  .layout {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  @media screen and (min-width: 1024px) {
+    .layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 40px;
+    }
+  }
 `;
 
 const NewestUpdate = () => {

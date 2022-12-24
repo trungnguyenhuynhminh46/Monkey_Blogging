@@ -15,6 +15,11 @@ const StyledPageNotFound = styled.div`
     font-size: 50px;
     font-weight: 700;
   }
+  @media screen and (max-width: 1024px) {
+    .heading {
+      font-size: 28px;
+    }
+  }
 `;
 
 const NotFoundPage = () => {

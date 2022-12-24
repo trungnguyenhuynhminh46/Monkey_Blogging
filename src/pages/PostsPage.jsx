@@ -78,7 +78,7 @@ const PostsPage = () => {
       ) : (
         <div className="flex-1 mb-[40px]">
           <Heading>Manage Posts</Heading>
-          <div className="flex justify-between items-center px-10">
+          <div className="flex flex-col gap-4 items-center sm:flex-row sm:justify-between sm:items-center px-10">
             <Button
               style={{ width: 192 }}
               fontSize={"18px"}

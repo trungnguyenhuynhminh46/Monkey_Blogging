@@ -8,6 +8,11 @@ import IconUsers from "./IconUsers";
 import IconPencilSquare from "./IconPencilSquare";
 import IconTrashCan from "./IconTrashCan";
 import IconCheck from "./IconCheck";
+import IconBar from "./IconBar";
+import IconChevonLeft from "./IconChevonLeft";
+import IconHome from "./IconHome";
+import IconChatBubble from "./IconChatBubble";
+
 export default {
   IconEye,
   IconEyeSlash,
@@ -19,4 +24,8 @@ export default {
   IconPencilSquare,
   IconTrashCan,
   IconCheck,
+  IconBar,
+  IconChevonLeft,
+  IconHome,
+  IconChatBubble,
 };

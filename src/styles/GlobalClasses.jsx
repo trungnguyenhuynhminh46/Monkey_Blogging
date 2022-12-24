@@ -9,6 +9,7 @@ export const GlobalClasses = css`
   }
   .grid-layout {
     display: grid;
+    gap: 40px;
     /* Hide scrollbar */
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -17,11 +18,10 @@ export const GlobalClasses = css`
     }
     @media screen and (min-width: 1024px) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 40px;
     }
     @media screen and (max-width: 1023.98px) {
       grid-auto-flow: column;
-      grid-auto-columns: 235px;
+      grid-auto-columns: 280px;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
     }
@@ -34,11 +34,6 @@ export const GlobalClasses = css`
         grid-template-columns: repeat(4, minmax(0, 1fr));
       }
     }
-  }
-  .layout {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 40px;
   }
   /* Visually hide any element (mostly text) accessibly. */
   .hidden-input {
@@ -72,15 +67,21 @@ export const GlobalClasses = css`
   }
 
   .v-stretch {
-    grid-row: span 2;
+    @media screen and (min-width: 640px) {
+      grid-row: span 2;
+    }
   }
 
   .h-stretch {
-    grid-column: span 2;
+    @media screen and (min-width: 640px) {
+      grid-column: span 2;
+    }
   }
 
   .big-stretch {
-    grid-row: span 2;
-    grid-column: span 2;
+    @media screen and (min-width: 640px) {
+      grid-row: span 2;
+      grid-column: span 2;
+    }
   }
 `;

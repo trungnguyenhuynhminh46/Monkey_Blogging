@@ -44,9 +44,9 @@ const Users = ({ users }) => {
       <thead>
         <tr>
           <th>Display name</th>
-          <th>Info</th>
-          <th>Email </th>
-          <th>Phone number</th>
+          <th className="hidden 2xl:table-cell">Info</th>
+          <th className="hidden lg:table-cell">Email </th>
+          <th className="hidden 2xl:table-cell">Phone number</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -59,7 +59,7 @@ const Users = ({ users }) => {
                   ? user.displayName.slice(0, 25) + "..."
                   : user.displayName}
               </td>
-              <td>
+              <td className="hidden 2xl:table-cell">
                 <div className="flex gap-4 items-center">
                   <img
                     src={user.image}
@@ -80,8 +80,8 @@ const Users = ({ users }) => {
                   </div>
                 </div>
               </td>
-              <td>{user.email}</td>
-              <td>{user.phone_num}</td>
+              <td className="hidden lg:table-cell">{user.email}</td>
+              <td className="hidden 2xl:table-cell">{user.phone_num}</td>
               <td>
                 {currentUser?.uid == user.id && (
                   <div className="flex items-center gap-x-3 text-gray-500">
